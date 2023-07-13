@@ -5,6 +5,7 @@
  */
 package com.ordermng.api;
 
+import com.ordermng.api.model.Result;
 import com.ordermng.api.model.Item;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
-import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
 @Validated
@@ -36,7 +36,7 @@ public interface ItemApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Item> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
 
 
     @Operation(summary = "Delete an item", description = "delete an item", tags={ "item" })
@@ -44,7 +44,7 @@ public interface ItemApi {
         @ApiResponse(responseCode = "400", description = "Invalid pet value") })
     @RequestMapping(value = "/item",
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deleteItem(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id, @Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name);
+    ResponseEntity<Result> deleteItem(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id, @Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name);
 
 
     @Operation(summary = "List items", description = "List all items available", tags={ "item" })
@@ -55,7 +55,7 @@ public interface ItemApi {
     @RequestMapping(value = "/item",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<List<Item>> listItems();
+    ResponseEntity<Result> listItems();
 
 
     @Operation(summary = "Update an existing item", description = "Update an existing item by Id", tags={ "item" })
@@ -71,7 +71,7 @@ public interface ItemApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Item> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
 
 }
 

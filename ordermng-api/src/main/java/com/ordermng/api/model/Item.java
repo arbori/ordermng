@@ -32,8 +32,7 @@ public class Item   {
    * @return id
    **/
   @Schema(example = "29843", description = "")
-  
-    public Long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -51,8 +50,7 @@ public class Item   {
    * @return name
    **/
   @Schema(example = "Chair", description = "")
-  
-    public String getName() {
+  public String getName() {
     return name;
   }
 

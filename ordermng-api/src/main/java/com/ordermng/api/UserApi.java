@@ -5,6 +5,7 @@
  */
 package com.ordermng.api;
 
+import com.ordermng.api.model.Result;
 import com.ordermng.api.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +37,7 @@ public interface UserApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<User> addUser(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
+    ResponseEntity<Result> addUser(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
 
 
     @Operation(summary = "Delete an user", description = "delete an user", tags={ "user" })
@@ -44,7 +45,7 @@ public interface UserApi {
         @ApiResponse(responseCode = "400", description = "Invalid pet value") })
     @RequestMapping(value = "/user",
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deleteUser(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id, @Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name);
+    ResponseEntity<Result> deleteUser(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id, @Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name);
 
 
     @Operation(summary = "List users", description = "List all users available", tags={ "user" })
@@ -55,7 +56,7 @@ public interface UserApi {
     @RequestMapping(value = "/user",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<List<User>> listUsers();
+    ResponseEntity<Result> listUsers();
 
 
     @Operation(summary = "Update an existing user", description = "Update an existing user by Id", tags={ "user" })
@@ -71,7 +72,6 @@ public interface UserApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<User> updateUser(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
-
+    ResponseEntity<Result> updateUser(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
 }
 
