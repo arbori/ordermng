@@ -1,3 +1,2 @@
-com/ordermng/db/configuration/DataSourceConfig.class
-com/ordermng/db/repository/UserRepository.class
-com/ordermng/db/User.class
+com/ordermng/db/ItemEntity.class
+com/ordermng/db/UserEntity.class

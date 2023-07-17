@@ -1,14 +1,14 @@
-package com.ordermng.core;
+package com.ordermng.core.uc;
 
-import com.ordermng.db.Item;
+import com.ordermng.core.domine.Item;
 
-public class ItemBusiness {
+public class ItemUseCase {
     private static final int NAME_SIZE = 14;
 
-    private ItemBusiness() {
+    private ItemUseCase() {
     }
 
-    public static boolean validate(Item item) {
+    public static boolean isValid(Item item) {
         return item != null &&
             item.getName() != null &&
             !item.getName().isEmpty() &&

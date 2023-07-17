@@ -3,7 +3,9 @@ package com.ordermng.api;
 import com.ordermng.api.model.Result;
 import com.ordermng.api.model.Item;
 import com.ordermng.api.transform.ItemTransform;
-import com.ordermng.core.ItemBusiness;
+import com.ordermng.core.uc.ItemUseCase;
+import com.ordermng.db.ItemEntity;
+import com.ordermng.db.repository.ItemRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -30,15 +32,12 @@ public class ItemApiController implements ItemApi {
 
     private static final Logger log = LoggerFactory.getLogger(ItemApiController.class);
 
-    private final ObjectMapper objectMapper;
-
     private final HttpServletRequest request;
 
-    private final CrudRepository<com.ordermng.db.Item, Long> repository;
+    private final ItemRepository repository;
 
     @Autowired
-    public ItemApiController(ObjectMapper objectMapper, HttpServletRequest request, CrudRepository<com.ordermng.db.Item, Long> repository) {
-        this.objectMapper = objectMapper;
+    public ItemApiController(HttpServletRequest request, ItemRepository repository) {
         this.request = request;
         this.repository = repository;
     }
@@ -48,11 +47,11 @@ public class ItemApiController implements ItemApi {
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                com.ordermng.db.Item item = ItemTransform.api2model(body);
+                com.ordermng.core.domine.Item item = ItemTransform.apiToDomine(body);
                 item.setActive(true);
 
-                if(ItemBusiness.validate(item)) {
-                    body = ItemTransform.model2api(repository.save(item));
+                if(ItemUseCase.isValid(item)) {
+                    body = ItemTransform.entityToModel(repository.save(new ItemEntity(item)));
                     
                     return new ResponseEntity<Result>(
                         new Result(HttpStatus.OK.value(), "The item was add", body), 
@@ -107,7 +106,7 @@ public class ItemApiController implements ItemApi {
             try {
                 List<Item> list = new ArrayList<>();
 
-                repository.findAll().forEach(o -> list.add(ItemTransform.model2api(o)));
+                repository.findAll().forEach(o -> list.add(ItemTransform.entityToModel(o)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -129,12 +128,14 @@ public class ItemApiController implements ItemApi {
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<com.ordermng.db.Item> optionalUser = repository.findById(body.getId());
-                com.ordermng.db.Item item = ItemTransform.api2model(body);
+                Optional<ItemEntity> optionalUser = repository.findById(body.getId());
+                com.ordermng.core.domine.Item item = ItemTransform.apiToDomine(body);
 
-                if(optionalUser.isPresent() && ItemBusiness.validate(item)) {
+                if(optionalUser.isPresent() && ItemUseCase.isValid(item)) {
+                    ItemTransform.updateEntity(optionalUser.get(), item);
+
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", ItemTransform.model2api(repository.save(item))), 
+                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToModel(repository.save(optionalUser.get()))), 
                         HttpStatus.OK);
                 }
 

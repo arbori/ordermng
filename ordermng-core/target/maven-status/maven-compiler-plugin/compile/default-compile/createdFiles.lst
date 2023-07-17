@@ -1,0 +1,6 @@
+com/ordermng/core/uc/OrderUseCase.class
+com/ordermng/core/domine/Order.class
+com/ordermng/core/domine/Item.class
+com/ordermng/core/uc/ItemUseCase.class
+com/ordermng/core/uc/UserUseCase.class
+com/ordermng/core/domine/User.class

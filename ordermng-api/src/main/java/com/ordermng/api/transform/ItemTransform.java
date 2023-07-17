@@ -1,10 +1,12 @@
 package com.ordermng.api.transform;
 
+import com.ordermng.db.ItemEntity;
+
 public class ItemTransform {
     private ItemTransform() {
     }
 
-    public static com.ordermng.api.model.Item model2api(com.ordermng.db.Item item) {
+    public static com.ordermng.api.model.Item entityToModel(ItemEntity item) {
         com.ordermng.api.model.Item body = new com.ordermng.api.model.Item();
 
         body.setId(item.getId());
@@ -14,11 +16,16 @@ public class ItemTransform {
         return body;
     }
 
-    public static com.ordermng.db.Item api2model(com.ordermng.api.model.Item body) {
-        return new com.ordermng.db.Item(
+    public static com.ordermng.core.domine.Item apiToDomine(com.ordermng.api.model.Item body) {
+        return new com.ordermng.core.domine.Item(
             body.getId(),
             body.getName(),
             body.isActive()
         );
     }    
+
+    public static void updateEntity(ItemEntity itemEntity, com.ordermng.core.domine.Item item) {
+        itemEntity.setName(item.getName());
+        itemEntity.setActive(item.getActive());
+}
 }

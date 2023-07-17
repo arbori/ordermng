@@ -1,12 +1,15 @@
 package com.ordermng.api;
 
 import com.ordermng.api.model.Order;
+import com.ordermng.api.transform.ItemTransform;
+import com.ordermng.api.transform.OrderTransform;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,16 +30,23 @@ public class OrderApiController implements OrderApi {
 
     private final HttpServletRequest request;
 
+    private final CrudRepository<com.ordermng.db.OrderEntity, Long> repository;
+
     @org.springframework.beans.factory.annotation.Autowired
-    public OrderApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public OrderApiController(ObjectMapper objectMapper, HttpServletRequest request, CrudRepository<com.ordermng.db.OrderEntity, Long> repository) {
         this.objectMapper = objectMapper;
         this.request = request;
+        this.repository = repository;
     }
 
     public ResponseEntity<Order> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body) {
         String accept = request.getHeader("Accept");
+        
         if (accept != null && accept.contains("application/json")) {
             try {
+                com.ordermng.db.OrderEntity order = OrderTransform.api2model(body);
+                order.setActive(true);
+
                 return new ResponseEntity<Order>(objectMapper.readValue("{\n  \"item\" : { },\n  \"quantity\" : 42,\n  \"moviment\" : { },\n  \"active\" : true,\n  \"id\" : 29843,\n  \"creationDate\" : \"2021-10-18T08:32:28Z\",\n  \"user\" : { }\n}", Order.class), HttpStatus.NOT_IMPLEMENTED);
             } catch (IOException e) {
                 log.error("Couldn't serialize response for content type application/json", e);

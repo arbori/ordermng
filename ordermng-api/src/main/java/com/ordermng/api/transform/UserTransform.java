@@ -1,10 +1,12 @@
 package com.ordermng.api.transform;
 
+import com.ordermng.db.UserEntity;
+
 public class UserTransform {
     private UserTransform() {
     }
 
-    public static com.ordermng.api.model.User model2api(com.ordermng.db.User user) {
+    public static com.ordermng.api.model.User entityToModel(UserEntity user) {
         com.ordermng.api.model.User body = new com.ordermng.api.model.User();
 
         body.setId(user.getId());
@@ -15,14 +17,17 @@ public class UserTransform {
         return body;
     }
 
-    public static com.ordermng.db.User api2model(com.ordermng.api.model.User body) {
-        com.ordermng.db.User user = new com.ordermng.db.User();
+    public static com.ordermng.core.domine.User modelToDomine(com.ordermng.api.model.User body) {
+        return new com.ordermng.core.domine.User(
+            body.getId(), 
+            body.getName(), 
+            body.getEmail(),
+            body.isActive());
+    }
 
-        user.setId(body.getId());
-        user.setName(body.getName());
-        user.setEmail(body.getEmail());
-        user.setActive(body.isActive());
-
-        return user;
+    public static void updateEntity(UserEntity userEntity, com.ordermng.core.domine.User user) {
+        userEntity.setName(user.getName());
+        userEntity.setActive(user.getActive());
+        userEntity.setEmail(user.getEmail());
     }
 }

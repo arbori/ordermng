@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.ordermng.core.domine.User;
+
 import javax.persistence.Column;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +19,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name =  "ordermng_user")
-public class User {
+public class UserEntity {
+	public UserEntity(User user) {
+		this.id = user.getId();
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.active = user.getActive();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")

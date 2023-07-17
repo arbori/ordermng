@@ -1,15 +1,15 @@
-package com.ordermng.core;
+package com.ordermng.core.uc;
 
-import com.ordermng.db.User;
+import com.ordermng.core.domine.User;
 
-public class UserBusiness {
+public class UserUseCase {
     private static final int NAME_SIZE = 25;
     private static final int EMAIL_SIZE = 32;
 
-    private UserBusiness() {
+    private UserUseCase() {
     }
     
-    public static boolean validate(User user) {
+    public static boolean isValid(User user) {
         return user != null &&
             user.getName() != null &&
             !user.getName().isEmpty() &&

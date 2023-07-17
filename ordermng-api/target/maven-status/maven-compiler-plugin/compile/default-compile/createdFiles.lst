@@ -15,12 +15,14 @@ com/ordermng/api/MovimentApiController.class
 io/swagger/configuration/CustomInstantDeserializer$7.class
 com/ordermng/api/ItemApiController.class
 com/ordermng/api/ApiResponseMessage.class
+com/ordermng/api/transform/OrderTransform.class
 io/swagger/configuration/CustomInstantDeserializer$5.class
 io/swagger/configuration/HomeController.class
 io/swagger/configuration/CustomInstantDeserializer$FromDecimalArguments.class
 com/ordermng/api/OrderApiController.class
 com/ordermng/api/Swagger2SpringBoot$ExitException.class
 io/swagger/configuration/CustomInstantDeserializer$10.class
+com/ordermng/api/transform/ItemTransform.class
 com/ordermng/api/Swagger2SpringBoot$CustomDateConfig.class
 io/swagger/configuration/CustomInstantDeserializer$8.class
 io/swagger/configuration/LocalDateTimeConverter.class
@@ -35,7 +37,9 @@ com/ordermng/api/ItemApi.class
 com/ordermng/api/OrderApi.class
 io/swagger/configuration/CustomInstantDeserializer$3.class
 io/swagger/configuration/CustomInstantDeserializer.class
+com/ordermng/api/transform/UserTransform.class
 com/ordermng/api/UserApiController.class
+com/ordermng/api/model/Result.class
 io/swagger/configuration/CustomInstantDeserializer$6.class
 io/swagger/configuration/SwaggerDocumentationConfig.class
 io/swagger/configuration/CustomInstantDeserializer$1.class

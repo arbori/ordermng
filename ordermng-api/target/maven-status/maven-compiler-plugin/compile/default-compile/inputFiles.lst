@@ -3,10 +3,12 @@
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/SwaggerDocumentationConfig.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/CustomInstantDeserializer.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/MovimentApiController.java
+/home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/transform/UserTransform.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/model/Item.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/model/User.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/UserApiController.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/LocalDateConverter.java
+/home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/model/Result.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/OrderApiController.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/ItemApi.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/LocalDateTimeConverter.java
@@ -22,4 +24,6 @@
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/HomeController.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/NotFoundException.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/io/swagger/configuration/JacksonConfiguration.java
+/home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/transform/OrderTransform.java
+/home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/transform/ItemTransform.java
 /home/arbori/Source/java-workspace/ordermng/ordermng-api/src/main/java/com/ordermng/api/ApiOriginFilter.java

@@ -12,8 +12,6 @@ import javax.validation.Valid;
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
-
-
 public class Order   {
   @JsonProperty("id")
   private Long id = null;
@@ -22,16 +20,13 @@ public class Order   {
   private OffsetDateTime creationDate = null;
 
   @JsonProperty("item")
-  private Object item = null;
+  private Item item = null;
 
   @JsonProperty("quantity")
   private Integer quantity = null;
 
   @JsonProperty("user")
-  private Object user = null;
-
-  @JsonProperty("moviment")
-  private Object moviment = null;
+  private User user = null;
 
   @JsonProperty("active")
   private Boolean active = null;
@@ -75,7 +70,7 @@ public class Order   {
     this.creationDate = creationDate;
   }
 
-  public Order item(Object item) {
+  public Order item(Item item) {
     this.item = item;
     return this;
   }
@@ -85,12 +80,11 @@ public class Order   {
    * @return item
    **/
   @Schema(description = "")
-  
-    public Object getItem() {
+  public Item getItem() {
     return item;
   }
 
-  public void setItem(Object item) {
+  public void setItem(Item item) {
     this.item = item;
   }
 
@@ -104,8 +98,7 @@ public class Order   {
    * @return quantity
    **/
   @Schema(example = "42", description = "")
-  
-    public Integer getQuantity() {
+  public Integer getQuantity() {
     return quantity;
   }
 
@@ -113,7 +106,7 @@ public class Order   {
     this.quantity = quantity;
   }
 
-  public Order user(Object user) {
+  public Order user(User user) {
     this.user = user;
     return this;
   }
@@ -123,32 +116,12 @@ public class Order   {
    * @return user
    **/
   @Schema(description = "")
-  
-    public Object getUser() {
+  public User getUser() {
     return user;
   }
 
-  public void setUser(Object user) {
+  public void setUser(User user) {
     this.user = user;
-  }
-
-  public Order moviment(Object moviment) {
-    this.moviment = moviment;
-    return this;
-  }
-
-  /**
-   * Get moviment
-   * @return moviment
-   **/
-  @Schema(description = "")
-  
-    public Object getMoviment() {
-    return moviment;
-  }
-
-  public void setMoviment(Object moviment) {
-    this.moviment = moviment;
   }
 
   public Order active(Boolean active) {
@@ -161,15 +134,13 @@ public class Order   {
    * @return active
    **/
   @Schema(example = "true", description = "")
-  
-    public Boolean isActive() {
+  public Boolean isActive() {
     return active;
   }
 
   public void setActive(Boolean active) {
     this.active = active;
   }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -185,13 +156,12 @@ public class Order   {
         Objects.equals(this.item, order.item) &&
         Objects.equals(this.quantity, order.quantity) &&
         Objects.equals(this.user, order.user) &&
-        Objects.equals(this.moviment, order.moviment) &&
         Objects.equals(this.active, order.active);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, creationDate, item, quantity, user, moviment, active);
+    return Objects.hash(id, creationDate, item, quantity, user, active);
   }
 
   @Override
@@ -204,7 +174,6 @@ public class Order   {
     sb.append("    item: ").append(toIndentedString(item)).append("\n");
     sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
     sb.append("    user: ").append(toIndentedString(user)).append("\n");
-    sb.append("    moviment: ").append(toIndentedString(moviment)).append("\n");
     sb.append("    active: ").append(toIndentedString(active)).append("\n");
     sb.append("}");
     return sb.toString();
