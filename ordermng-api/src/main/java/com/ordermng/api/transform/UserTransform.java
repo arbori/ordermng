@@ -6,7 +6,7 @@ public class UserTransform {
     private UserTransform() {
     }
 
-    public static com.ordermng.api.model.User entityToModel(UserEntity user) {
+    public static com.ordermng.api.model.User entityToApiModel(UserEntity user) {
         com.ordermng.api.model.User body = new com.ordermng.api.model.User();
 
         body.setId(user.getId());
@@ -17,7 +17,7 @@ public class UserTransform {
         return body;
     }
 
-    public static com.ordermng.core.domine.User modelToDomine(com.ordermng.api.model.User body) {
+    public static com.ordermng.core.domine.User apiModelToDomine(com.ordermng.api.model.User body) {
         return new com.ordermng.core.domine.User(
             body.getId(), 
             body.getName(), 

@@ -6,6 +6,8 @@
 package com.ordermng.api;
 
 import com.ordermng.api.model.Order;
+import com.ordermng.api.model.Result;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
-import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
 @Validated
@@ -36,7 +37,7 @@ public interface OrderApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Order> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
+    ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
 
 
     @Operation(summary = "Delete an order", description = "delete an order", tags={ "order" })
@@ -44,7 +45,7 @@ public interface OrderApi {
         @ApiResponse(responseCode = "400", description = "Invalid pet value") })
     @RequestMapping(value = "/order",
         method = RequestMethod.DELETE)
-    ResponseEntity<Void> deleteOrder(@Parameter(in = ParameterIn.HEADER, description = "Order id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id);
+    ResponseEntity<Result> deleteOrder(@Parameter(in = ParameterIn.HEADER, description = "Order id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id);
 
 
     @Operation(summary = "List order", description = "List all order available", tags={ "order" })
@@ -55,7 +56,7 @@ public interface OrderApi {
     @RequestMapping(value = "/order",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<List<Order>> listOrders();
+    ResponseEntity<Result> listOrders();
 
 
     @Operation(summary = "Update an existing order", description = "Update an existing order by Id", tags={ "order" })
@@ -71,7 +72,7 @@ public interface OrderApi {
         produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Order> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
+    ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
 
 }
 

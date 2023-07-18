@@ -4,10 +4,7 @@ import com.ordermng.api.model.Result;
 import com.ordermng.api.model.User;
 import com.ordermng.api.transform.UserTransform;
 import com.ordermng.core.uc.UserUseCase;
-import com.ordermng.db.ItemEntity;
 import com.ordermng.db.UserEntity;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,15 +30,12 @@ public class UserApiController implements UserApi {
 
     private static final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
-    private final ObjectMapper objectMapper;
-
     private final HttpServletRequest request;
 
     private final CrudRepository<com.ordermng.db.UserEntity, Long> repository;
 
     @Autowired
-    public UserApiController(ObjectMapper objectMapper, HttpServletRequest request, CrudRepository<com.ordermng.db.UserEntity, Long> repository) {
-        this.objectMapper = objectMapper;
+    public UserApiController(HttpServletRequest request, CrudRepository<com.ordermng.db.UserEntity, Long> repository) {
         this.request = request;
         this.repository = repository;
     }
@@ -51,11 +45,11 @@ public class UserApiController implements UserApi {
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                com.ordermng.core.domine.User user = UserTransform.modelToDomine(body);
+                com.ordermng.core.domine.User user = UserTransform.apiModelToDomine(body);
                 user.setActive(true);
 
                 if(UserUseCase.isValid(user)) {
-                    body = UserTransform.entityToModel(repository.save(new UserEntity(user)));
+                    body = UserTransform.entityToApiModel(repository.save(new UserEntity(user)));
 
                     return new ResponseEntity<Result>(
                         new Result(HttpStatus.OK.value(), "The user was add", body), 
@@ -81,15 +75,23 @@ public class UserApiController implements UserApi {
 
     public ResponseEntity<Result> deleteUser(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id,@Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name) {
         String accept = request.getHeader("Accept");
-
+        
         if (accept != null && accept.contains("application/json")) {
             try {
-                repository.deleteById(id);
+                Optional<UserEntity> optionalUser = repository.findById(id);
+
+                if(optionalUser.isPresent()) {
+                    optionalUser.get().setActive(false);
+
+                    return new ResponseEntity<Result>(
+                        new Result(HttpStatus.OK.value(), "", UserTransform.entityToApiModel(repository.save(optionalUser.get()))), 
+                        HttpStatus.OK);
+                }
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.OK.value(), String.format("A User with id %d was deleted", id), id), 
-                    HttpStatus.OK);
-            } catch(Exception e) {
+                    new Result(HttpStatus.BAD_REQUEST.value(), "User does not exist or invalid", id), 
+                    HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
                 return new ResponseEntity<Result>(
@@ -110,7 +112,7 @@ public class UserApiController implements UserApi {
             try {
                 List<User> list = new ArrayList<>();
 
-                repository.findAll().forEach(o -> list.add(UserTransform.entityToModel(o)));
+                repository.findAll().forEach(o -> list.add(UserTransform.entityToApiModel(o)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -133,13 +135,13 @@ public class UserApiController implements UserApi {
         if (accept != null && accept.contains("application/json")) {
             try {
                 Optional<UserEntity> optionalUser = repository.findById(body.getId());
-                com.ordermng.core.domine.User user = UserTransform.modelToDomine(body);
+                com.ordermng.core.domine.User user = UserTransform.apiModelToDomine(body);
 
                 if(optionalUser.isPresent() && UserUseCase.isValid(user)) {
                     UserTransform.updateEntity(optionalUser.get(), user);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", UserTransform.entityToModel(repository.save(optionalUser.get()))), 
+                        new Result(HttpStatus.OK.value(), "", UserTransform.entityToApiModel(repository.save(optionalUser.get()))), 
                         HttpStatus.OK);
                 }
 

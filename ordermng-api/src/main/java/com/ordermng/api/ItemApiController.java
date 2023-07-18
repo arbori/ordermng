@@ -6,14 +6,12 @@ import com.ordermng.api.transform.ItemTransform;
 import com.ordermng.core.uc.ItemUseCase;
 import com.ordermng.db.ItemEntity;
 import com.ordermng.db.repository.ItemRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,11 +45,11 @@ public class ItemApiController implements ItemApi {
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                com.ordermng.core.domine.Item item = ItemTransform.apiToDomine(body);
+                com.ordermng.core.domine.Item item = ItemTransform.apiModelToDomine(body);
                 item.setActive(true);
 
                 if(ItemUseCase.isValid(item)) {
-                    body = ItemTransform.entityToModel(repository.save(new ItemEntity(item)));
+                    body = ItemTransform.entityToApiModel(repository.save(new ItemEntity(item)));
                     
                     return new ResponseEntity<Result>(
                         new Result(HttpStatus.OK.value(), "The item was add", body), 
@@ -77,15 +75,23 @@ public class ItemApiController implements ItemApi {
 
     public ResponseEntity<Result> deleteItem(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id,@Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name) {
         String accept = request.getHeader("Accept");
-
+        
         if (accept != null && accept.contains("application/json")) {
             try {
-                repository.deleteById(id);
+                Optional<ItemEntity> optionalUser = repository.findById(id);
+
+                if(optionalUser.isPresent()) {
+                    optionalUser.get().setActive(false);
+
+                    return new ResponseEntity<Result>(
+                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToApiModel(repository.save(optionalUser.get()))), 
+                        HttpStatus.OK);
+                }
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.OK.value(), String.format("An Item with id %d was deleted", id), null), 
-                    HttpStatus.OK);
-            } catch(Exception e) {
+                    new Result(HttpStatus.BAD_REQUEST.value(), "Item does not exist or invalid", id), 
+                    HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
                 return new ResponseEntity<Result>(
@@ -106,7 +112,7 @@ public class ItemApiController implements ItemApi {
             try {
                 List<Item> list = new ArrayList<>();
 
-                repository.findAll().forEach(o -> list.add(ItemTransform.entityToModel(o)));
+                repository.findAll().forEach(o -> list.add(ItemTransform.entityToApiModel(o)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -129,13 +135,13 @@ public class ItemApiController implements ItemApi {
         if (accept != null && accept.contains("application/json")) {
             try {
                 Optional<ItemEntity> optionalUser = repository.findById(body.getId());
-                com.ordermng.core.domine.Item item = ItemTransform.apiToDomine(body);
+                com.ordermng.core.domine.Item item = ItemTransform.apiModelToDomine(body);
 
                 if(optionalUser.isPresent() && ItemUseCase.isValid(item)) {
                     ItemTransform.updateEntity(optionalUser.get(), item);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToModel(repository.save(optionalUser.get()))), 
+                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToApiModel(repository.save(optionalUser.get()))), 
                         HttpStatus.OK);
                 }
 

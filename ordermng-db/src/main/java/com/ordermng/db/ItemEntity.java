@@ -35,4 +35,8 @@ public class ItemEntity {
 
 	@Column(name = "item_active")
 	private Boolean active;
+
+	public Item toDomine() {
+		return new Item(id, name, active);
+	}
 }

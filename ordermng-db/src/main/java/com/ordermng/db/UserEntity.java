@@ -40,4 +40,8 @@ public class UserEntity {
 
 	@Column(name = "user_active")
 	private Boolean active;
+
+	public User toDomine() {
+		return new User(id, name, email, active);
+	}
 }
