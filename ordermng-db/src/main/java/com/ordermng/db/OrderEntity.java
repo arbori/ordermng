@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ordermng.core.domine.Order;
@@ -39,13 +41,15 @@ public class OrderEntity {
     @Column(name = "order_creation_date")
     private LocalDateTime creationDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_item_id")
     private ItemEntity item;
 
     @Column(name = "order_quantity")
 	private Integer quantity;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_user_id")
     private UserEntity user;
 
     @Column(name = "order_active")

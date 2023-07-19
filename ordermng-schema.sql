@@ -1,4 +1,4 @@
-drop table if exists order_stock_moviment;
+drop table if exists ordermng_stock_moviment;
 drop table if exists ordermng_order;
 drop table if exists ordermng_item;
 drop table if exists ordermng_user;
@@ -32,10 +32,11 @@ create table ordermng_order (
 	unique(order_id)
 );
 
-create table order_stock_moviment (
+create table ordermng_stock_moviment (
 	moviment_id INT generated always as identity,
 	moviment_creation_date TIMESTAMP not null,
 	moviment_quantity INT not null,
-	moviment_order_id INT not null references ordermng_order (order_id),
+	moviment_item_id INT not null references ordermng_item (item_id),
+	moviment_order_id INT references ordermng_order (order_id),
 	moviment_active BOOLEAN not null
 );

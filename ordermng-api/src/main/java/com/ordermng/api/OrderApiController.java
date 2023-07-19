@@ -3,9 +3,7 @@ package com.ordermng.api;
 import com.ordermng.api.model.Order;
 import com.ordermng.api.model.Result;
 import com.ordermng.api.transform.OrderTransform;
-import com.ordermng.api.transform.UserTransform;
 import com.ordermng.core.OrderManagerException;
-import com.ordermng.core.uc.OrderUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,13 +18,7 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import com.ordermng.db.OrderEntity;
 import com.ordermng.db.interactor.OrderInteractor;
-import com.ordermng.db.repository.ItemRepository;
-import com.ordermng.db.repository.OrderRepository;
-import com.ordermng.db.repository.UserRepository;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
 @RestController
@@ -36,19 +28,11 @@ public class OrderApiController implements OrderApi {
 
     private final HttpServletRequest request;
 
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
-
     private final OrderInteractor orderInteractor;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public OrderApiController(HttpServletRequest request, OrderInteractor orderInteractor, OrderRepository orderRepository, UserRepository userRepository, ItemRepository itemRepository) {
+    public OrderApiController(HttpServletRequest request, OrderInteractor orderInteractor) {
         this.request = request;
-        this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-
         this.orderInteractor = orderInteractor;
     }
 
