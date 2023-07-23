@@ -5,8 +5,10 @@
  */
 package com.ordermng.api;
 
+import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
 import com.ordermng.api.model.User;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -23,17 +25,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 @Validated
 public interface UserApi {
 
     @Operation(summary = "Add a new user to the store", description = "Add a new user to the store", tags={ "user" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "200", description = "Successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     @RequestMapping(value = "/user",
-        produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
     ResponseEntity<Result> addUser(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
@@ -41,13 +42,14 @@ public interface UserApi {
 
     @Operation(summary = "Delete an user", description = "delete an user", tags={ "user" })
     @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "Successful operation"),
+        
         @ApiResponse(responseCode = "400", description = "Invalid pet value") })
     @RequestMapping(value = "/user",
         method = RequestMethod.DELETE)
-    ResponseEntity<Result> deleteUser(@Parameter(in = ParameterIn.HEADER, description = "Item id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id, @Parameter(in = ParameterIn.HEADER, description = "" ,schema=@Schema()) @RequestHeader(value="name", required=false) String name);
+    ResponseEntity<Result> deleteUser(@Parameter(in = ParameterIn.HEADER, description = "User email to delete" ,required=true,schema=@Schema()) @RequestHeader(value="email", required=true) String email);
 
-
-    @Operation(summary = "List users", description = "List all users available", tags={ "user" })
+    @Operation(summary = "List uss", description = "List all uss available", tags={ "user" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = User.class)))),
         
@@ -58,9 +60,9 @@ public interface UserApi {
     ResponseEntity<Result> listUsers();
 
 
-    @Operation(summary = "Update an existing user", description = "Update an existing user by Id", tags={ "user" })
+    @Operation(summary = "Update an existing user", description = "Update an existing user by email", tags={ "user" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "200", description = "Successful operation"),
         
         @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
         
@@ -68,7 +70,6 @@ public interface UserApi {
         
         @ApiResponse(responseCode = "405", description = "Validation exception") })
     @RequestMapping(value = "/user",
-        produces = { "application/json" }, 
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
     ResponseEntity<Result> updateUser(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);

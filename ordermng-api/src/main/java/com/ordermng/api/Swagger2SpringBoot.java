@@ -6,7 +6,6 @@ import io.swagger.configuration.LocalDateTimeConverter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,15 +15,12 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
 @EnableOpenApi
-@EnableAutoConfiguration
-@EnableTransactionManagement
 @ComponentScan(basePackages = { "com.ordermng.core", "com.ordermng.api", "com.ordermng.db" , "io.swagger.configuration"})
-@EnableJpaRepositories(basePackages="com.ordermng.db.repository")
+@EnableJpaRepositories(basePackages="com.ordermng.db")
 @EntityScan(basePackages="com.ordermng.db")
 public class Swagger2SpringBoot implements CommandLineRunner {
 
@@ -35,7 +31,7 @@ public class Swagger2SpringBoot implements CommandLineRunner {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new SpringApplication(Swagger2SpringBoot.class).run(args);
     }
 

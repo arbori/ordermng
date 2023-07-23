@@ -9,35 +9,33 @@ import org.springframework.validation.annotation.Validated;
  * Item
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-07T11:52:41.130101+01:00[Europe/Lisbon]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 
 
 public class Item   {
-  @JsonProperty("id")
-  private Long id = null;
+  @JsonProperty("code")
+  private String code = null;
 
   @JsonProperty("name")
   private String name = null;
 
-  @JsonProperty("active")
-  private Boolean active = null;
-
-  public Item id(Long id) {
-    this.id = id;
+  public Item code(String code) {
+    this.code = code;
     return this;
   }
 
   /**
-   * Get id
-   * @return id
+   * Get code
+   * @return code
    **/
-  @Schema(example = "29843", description = "")
-  public Long getId() {
-    return id;
+  @Schema(example = "MAT4526-R", description = "")
+  
+    public String getCode() {
+    return code;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public Item name(String name) {
@@ -49,32 +47,14 @@ public class Item   {
    * Get name
    * @return name
    **/
-  @Schema(example = "Chair", description = "")
-  public String getName() {
+  @Schema(example = "Hamer", description = "")
+  
+    public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public Item active(Boolean active) {
-    this.active = active;
-    return this;
-  }
-
-  /**
-   * Get active
-   * @return active
-   **/
-  @Schema(example = "true", description = "")
-  
-    public Boolean isActive() {
-    return active;
-  }
-
-  public void setActive(Boolean active) {
-    this.active = active;
   }
 
 
@@ -87,14 +67,13 @@ public class Item   {
       return false;
     }
     Item item = (Item) o;
-    return Objects.equals(this.id, item.id) &&
-        Objects.equals(this.name, item.name) &&
-        Objects.equals(this.active, item.active);
+    return Objects.equals(this.code, item.code) &&
+        Objects.equals(this.name, item.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, active);
+    return Objects.hash(code, name);
   }
 
   @Override
@@ -102,9 +81,8 @@ public class Item   {
     StringBuilder sb = new StringBuilder();
     sb.append("class Item {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    active: ").append(toIndentedString(active)).append("\n");
     sb.append("}");
     return sb.toString();
   }

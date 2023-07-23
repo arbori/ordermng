@@ -5,8 +5,8 @@
  */
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
+import com.ordermng.api.model.StockMovement;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,45 +23,44 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
-import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 @Validated
-public interface ItemApi {
+public interface StockMovementApi {
 
-    @Operation(summary = "Add a new item to the store", description = "Add a new item to the store", tags={ "item" })
+    @Operation(summary = "Add a new stock movement to the store", description = "Add a new stock movement to the store", tags={ "stockMovement" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
-    @RequestMapping(value = "/item",
+    @RequestMapping(value = "/stockMovement",
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> addStockMovement(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new stock movement in the store", required=true, schema=@Schema()) @Valid @RequestBody StockMovement body);
 
 
-    @Operation(summary = "Delete an item", description = "delete an item", tags={ "item" })
+    @Operation(summary = "Delete an stock movement", description = "delete an stock movement", tags={ "stockMovement" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Successful operation"),
         
         @ApiResponse(responseCode = "400", description = "Invalid pet value") })
-    @RequestMapping(value = "/item",
+    @RequestMapping(value = "/stockMovement",
         method = RequestMethod.DELETE)
-    ResponseEntity<Result> deleteItem(@Parameter(in = ParameterIn.HEADER, description = "Item code to delete" ,required=true,schema=@Schema()) @RequestHeader(value="code", required=true) String code);
+    ResponseEntity<Result> deleteStockMovement(@Parameter(in = ParameterIn.HEADER, description = "Stock movement id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id);
 
 
-    @Operation(summary = "List items", description = "List all items available", tags={ "item" })
+    @Operation(summary = "List stock movement", description = "List all stock movement available", tags={ "stockMovement" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Item.class)))),
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StockMovement.class)))),
         
         @ApiResponse(responseCode = "400", description = "Invalid status value") })
-    @RequestMapping(value = "/item",
+    @RequestMapping(value = "/stockMovement",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Result> listItems();
+    ResponseEntity<Result> listStockMovements();
 
 
-    @Operation(summary = "Update an existing item", description = "Update an existing item by Id", tags={ "item" })
+    @Operation(summary = "Update an existing stock movement", description = "Update an existing stock movement", tags={ "stockMovement" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "Successful operation"),
         
@@ -70,9 +69,10 @@ public interface ItemApi {
         @ApiResponse(responseCode = "404", description = "Item not found"),
         
         @ApiResponse(responseCode = "405", description = "Validation exception") })
-    @RequestMapping(value = "/item",
+    @RequestMapping(value = "/stockMovement",
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> updateStockMovement(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent stock movement in the store", required=true, schema=@Schema()) @Valid @RequestBody StockMovement body);
+
 }
 

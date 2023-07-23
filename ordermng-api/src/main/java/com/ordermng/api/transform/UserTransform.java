@@ -1,33 +1,29 @@
 package com.ordermng.api.transform;
 
-import com.ordermng.db.UserEntity;
+import javax.validation.Valid;
+
+import com.ordermng.api.model.User;
+import com.ordermng.db.user.UserEntity;
 
 public class UserTransform {
     private UserTransform() {
     }
 
-    public static com.ordermng.api.model.User entityToApiModel(UserEntity user) {
-        com.ordermng.api.model.User body = new com.ordermng.api.model.User();
-
-        body.setId(user.getId());
-        body.setName(user.getName());
-        body.setEmail(user.getEmail());
-        body.setActive(user.getActive());
-
-        return body;
+    public static UserEntity requestToEntity(@Valid User request) {
+        return new UserEntity(request.getEmail(), request.getName(), true);
     }
 
-    public static com.ordermng.core.domine.User apiModelToDomine(com.ordermng.api.model.User body) {
-        return new com.ordermng.core.domine.User(
-            body.getId(), 
-            body.getName(), 
-            body.getEmail(),
-            body.isActive());
+    public static User entityToResponse(UserEntity userEntity) {
+        User user = new User();
+
+        user.setEmail(userEntity.getEmail());
+        user.setName(userEntity.getName());
+
+        return user;
     }
 
-    public static void updateEntity(UserEntity userEntity, com.ordermng.core.domine.User user) {
-        userEntity.setName(user.getName());
-        userEntity.setActive(user.getActive());
-        userEntity.setEmail(user.getEmail());
+    public static void updateEntity(UserEntity tar, UserEntity src) {
+        tar.setName(src.getName());
     }
+
 }

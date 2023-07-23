@@ -1,31 +1,30 @@
 package com.ordermng.api.transform;
 
-import com.ordermng.db.ItemEntity;
+import com.ordermng.api.model.Item;
+import com.ordermng.db.item.ItemEntity;
 
 public class ItemTransform {
     private ItemTransform() {
     }
 
-    public static com.ordermng.core.domine.Item apiModelToDomine(com.ordermng.api.model.Item body) {
-        return new com.ordermng.core.domine.Item(
-            body.getId(),
-            body.getName(),
-            body.isActive()
+    public static ItemEntity requestToEntity(Item itemRequest) {
+        return new ItemEntity(
+            itemRequest.getCode(),
+            itemRequest.getName(),
+            true
         );
     }    
 
-    public static com.ordermng.api.model.Item entityToApiModel(ItemEntity item) {
-        com.ordermng.api.model.Item body = new com.ordermng.api.model.Item();
+    public static Item entityToResponse(ItemEntity itemEntity) {
+        Item itemResponse = new Item();
 
-        body.setId(item.getId());
-        body.setName(item.getName());
-        body.setActive(item.getActive());
+        itemResponse.setCode(itemEntity.getCode());
+        itemResponse.setName(itemEntity.getName());
 
-        return body;
+        return itemResponse;
     }
 
-    public static void updateEntity(ItemEntity itemEntity, com.ordermng.core.domine.Item item) {
-        itemEntity.setName(item.getName());
-        itemEntity.setActive(item.getActive());
+    public static void updateEntity(ItemEntity tar, ItemEntity src) {
+        tar.setName(src.getName());
     }
 }

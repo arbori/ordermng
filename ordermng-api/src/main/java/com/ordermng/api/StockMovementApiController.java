@@ -2,10 +2,16 @@ package com.ordermng.api;
 
 import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
+import com.ordermng.api.model.StockMovement;
 import com.ordermng.api.transform.ItemTransform;
+import com.ordermng.api.transform.StockMovementTransform;
 import com.ordermng.core.item.ItemUseCase;
+import com.ordermng.core.movement.StockMovementUseCase;
 import com.ordermng.db.item.ItemEntity;
 import com.ordermng.db.item.ItemRepository;
+import com.ordermng.db.movement.StockMovementEntity;
+import com.ordermng.db.movement.StockMovementRepository;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,43 +30,45 @@ import java.util.Optional;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 @RestController
-public class ItemApiController implements ItemApi {
+public class StockMovementApiController implements StockMovementApi {
 
     private static final Logger log = LoggerFactory.getLogger(ItemApiController.class);
 
     private final HttpServletRequest request;
 
-    private final ItemRepository repository;
+    private final StockMovementRepository repository;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ItemApiController(HttpServletRequest request, ItemRepository repository) {
+    public StockMovementApiController(HttpServletRequest request, StockMovementRepository repository) {
         this.request = request;
         this.repository = repository;
     }
 
-    public ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body) {
+    public ResponseEntity<Result> addStockMovement(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new stock movement in the store", required=true, schema=@Schema()) @Valid @RequestBody StockMovement body) {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                ItemEntity itemEntity = ItemTransform.requestToEntity(body);
+                StockMovementEntity stockMovementEntity = StockMovementTransform.requestToEntity(body);
 
-                if(ItemUseCase.isValid(itemEntity)) {
-                    repository.save(itemEntity);
+                if(StockMovementUseCase.isValid(stockMovementEntity)) {
+                    stockMovementEntity = repository.save(stockMovementEntity);
 
+                    body = StockMovementTransform.entityToResponse(stockMovementEntity);
+                    
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The item has been add", body.getCode()), 
+                        new Result(HttpStatus.OK.value(), "The stock movement has been add", body), 
                         HttpStatus.OK);
                 }
 
                 return new ResponseEntity<Result>(
-                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", body.getCode()), 
+                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", body), 
                         HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), body.getCode()), 
+                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), body), 
                     HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -70,31 +78,31 @@ public class ItemApiController implements ItemApi {
             HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Result> deleteItem(@Parameter(in = ParameterIn.HEADER, description = "Item code to delete" ,required=true,schema=@Schema()) @RequestHeader(value="code", required=true) String code) {
+    public ResponseEntity<Result> deleteStockMovement(@Parameter(in = ParameterIn.HEADER, description = "Stock movement id to delete" ,required=true,schema=@Schema()) @RequestHeader(value="id", required=true) Long id) {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<ItemEntity> optionalItemEntity = repository.findActiveByCode(code);
+                Optional<StockMovementEntity> optionalStockMovementEntity = repository.findActiveById(id);
 
-                if(optionalItemEntity.isPresent()) {
-                    optionalItemEntity.get().setActive(false);
+                if(optionalStockMovementEntity.isPresent()) {
+                    optionalStockMovementEntity.get().setActive(false);
 
-                    repository.save(optionalItemEntity.get());
+                    repository.save(optionalStockMovementEntity.get());
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The item has been deleted", code), 
+                        new Result(HttpStatus.OK.value(), "The item has been deleted", id), 
                         HttpStatus.OK);
                 }
 
                 return new ResponseEntity<Result>(
-                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", code), 
+                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", id), 
                         HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), code), 
+                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), id), 
                     HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -104,14 +112,14 @@ public class ItemApiController implements ItemApi {
             HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Result> listItems() {
+    public ResponseEntity<Result> listStockMovements() {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                List<Item> list = new ArrayList<>();
+                List<StockMovement> list = new ArrayList<>();
 
-                repository.findAllActive().forEach(o -> list.add(ItemTransform.entityToResponse(o)));
+                repository.findAllActive().forEach(o -> list.add(StockMovementTransform.entityToResponse(o)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -128,24 +136,24 @@ public class ItemApiController implements ItemApi {
             HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body) {
+    public ResponseEntity<Result> updateStockMovement(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent stock movement in the store", required=true, schema=@Schema()) @Valid @RequestBody StockMovement body) {
         String accept = request.getHeader("Accept");
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<ItemEntity> optionalUser = repository.findActiveByCode(body.getCode());
-                ItemEntity itemEntity = ItemTransform.requestToEntity(body);
+                Optional<StockMovementEntity> optionalStockMovement = repository.findActiveById(body.getId());
+                StockMovementEntity stockMovementEntity = StockMovementTransform.requestToEntity(body);
 
-                if(optionalUser.isPresent() && ItemUseCase.isValid(itemEntity)) {
-                    ItemTransform.updateEntity(optionalUser.get(), itemEntity);
+                if(optionalStockMovement.isPresent() && StockMovementUseCase.isValid(stockMovementEntity)) {
+                    StockMovementTransform.updateEntity(optionalStockMovement.get(), stockMovementEntity);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToResponse(repository.save(optionalUser.get()))), 
+                        new Result(HttpStatus.OK.value(), "", StockMovementTransform.entityToResponse(repository.save(optionalStockMovement.get()))), 
                         HttpStatus.OK);
                 }
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.BAD_REQUEST.value(), "Item does not exist or invalid", body), 
+                    new Result(HttpStatus.BAD_REQUEST.value(), "StockMovement does not exist or invalid", body), 
                     HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
