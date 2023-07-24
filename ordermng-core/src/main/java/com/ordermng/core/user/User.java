@@ -1,9 +1,9 @@
 package com.ordermng.core.user;
 
 public class User {
-	private String email;
-	private String name;
-	private Boolean active;
+	protected String email;
+	protected String name;
+	protected Boolean active;
 
 	boolean isValid() {
 		return email != null && !email.isEmpty() &&

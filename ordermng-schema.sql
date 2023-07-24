@@ -1,4 +1,4 @@
-drop table if exists ordermng_stock_moviment;
+drop table if exists ordermng_stock_movement;
 drop table if exists ordermng_order_item;
 drop table if exists ordermng_order;
 drop table if exists ordermng_user;
@@ -6,15 +6,15 @@ drop table if exists ordermng_item;
 
 CREATE TABLE ordermng_item (
 	item_code varchar(12) NOT NULL,
-	item_name varchar(40) NULL,
-	item_active bool not NULL,
+	item_name varchar(40) NOT NULL,
+	item_active bool NOT NULL,
 	CONSTRAINT ordermng_item_pkey PRIMARY KEY (item_code)
 );
 create unique index item_name_idx ON ordermng_item (item_name);
 
 create table ordermng_user (
 	user_id INT not null generated always as identity,
-	user_email VARCHAR(32),
+	user_email VARCHAR(32) not null,
 	user_name VARCHAR(40) not null,
 	user_active BOOLEAN not null,
 	CONSTRAINT ordermng_user_pkey PRIMARY KEY (user_id)
