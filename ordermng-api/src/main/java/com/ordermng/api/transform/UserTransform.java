@@ -10,7 +10,7 @@ public class UserTransform {
     }
 
     public static UserEntity requestToEntity(@Valid User request) {
-        return new UserEntity(request.getEmail(), request.getName(), true);
+        return new UserEntity(null, request.getEmail(), request.getName(), true);
     }
 
     public static User entityToResponse(UserEntity userEntity) {

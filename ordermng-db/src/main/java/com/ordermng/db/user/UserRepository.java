@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, String> {
-    @Query("select u from UserEntity u where u.email = :email and u.active = true")
+    @Query("select u from UserEntity u where u.getEmail() = :email and u.getActive() = true")
     Optional<UserEntity> findActiveByEmail(@Param("email") String email);
 
-    @Query("select u from UserEntity u where u.active = true")
+    @Query("select u from UserEntity u where u.getActive() = true")
     Iterable<UserEntity> findAllActive();
 }

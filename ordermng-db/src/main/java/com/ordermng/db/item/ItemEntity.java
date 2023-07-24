@@ -22,13 +22,13 @@ public class ItemEntity extends Item {
 	}
 	
 	@Id
-	@Column(name = "item_code")
+	@Column(name = "item_code", length = 12)
 	@Override
 	public String getCode() {
 		return super.getCode();
 	}
 
-	@Column(name = "item_name")
+	@Column(name = "item_name", length = 40)
 	@Override
 	public String getName() {
 		return super.getName();

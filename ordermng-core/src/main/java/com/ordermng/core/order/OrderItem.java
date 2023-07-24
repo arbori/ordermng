@@ -54,6 +54,9 @@ public class OrderItem {
         return total;
     }
     
+    public OrderItem() {
+    }
+
     public OrderItem(Item item, Double quantity) {
         this.item = item;
         this.quantity = quantity;

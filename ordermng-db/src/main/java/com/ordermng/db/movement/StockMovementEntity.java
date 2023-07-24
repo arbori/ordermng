@@ -12,19 +12,22 @@ import javax.persistence.Table;
 import com.ordermng.core.item.Item;
 import com.ordermng.core.movement.StockMovement;
 import com.ordermng.db.item.ItemEntity;
+import com.ordermng.db.order.OrderItemEntity;
 
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 
 @Entity
-@Table(name =  "ordermng_stock_moviment")
+@Table(name =  "ordermng_stock_movement")
 public class StockMovementEntity extends StockMovement {
 	public StockMovementEntity() {
 		super();
 	}
 	public StockMovementEntity(Long id, LocalDateTime creationDate, Item item, Double quantity, Boolean active) {
-		super(id, creationDate, item, quantity, active);
+		super(creationDate, item, quantity, active);
+
+		setId(id);
 	}
 	public StockMovementEntity(StockMovementEntity movement) {
 		super(movement);
@@ -32,38 +35,81 @@ public class StockMovementEntity extends StockMovement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "moviment_id")
-	@Override
+	@Column(name = "movement_id")
+	private Long id;
+
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	@Column(name = "moviment_creation_date")
+	@Column(name = "movement_creation_date")
 	@Override
 	public LocalDateTime getCreationDate() {
 		return super.getCreationDate();
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "moviment_item_code")
+    @JoinColumn(name = "movement_item_code")
 	@Override
 	public ItemEntity getItem() {
 		return (ItemEntity) super.getItem();
 	}
-
 	public void setItem(ItemEntity item) {
 		super.setItem(item);
 	}
 
-	@Column(name = "moviment_quantity")
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movement_orderitem_id")
+	@Override
+	public OrderItemEntity getOrderItem() {
+		return (OrderItemEntity) super.getOrderItem();
+	}
+	public void setOrderItem(OrderItemEntity orderItemEntity) {
+		super.setOrderItem(orderItemEntity);
+	}
+
+	@Column(name = "movement_quantity")
 	@Override
 	public Double getQuantity() {
 		return super.getQuantity();
 	}
 
-	@Column(name = "moviment_active")
+	@Column(name = "movement_active")
+	// private Boolean active;
 	@Override
 	public Boolean getActive() {
 		return super.getActive();
+	}
+    // public void setActive(Boolean active) {
+	// 	this.active = active;
+    //     super.setActive(active);
+    // }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StockMovementEntity other = (StockMovementEntity) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 }

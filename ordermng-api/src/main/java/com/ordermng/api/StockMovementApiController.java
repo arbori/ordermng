@@ -1,14 +1,9 @@
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
 import com.ordermng.api.model.StockMovement;
-import com.ordermng.api.transform.ItemTransform;
 import com.ordermng.api.transform.StockMovementTransform;
-import com.ordermng.core.item.ItemUseCase;
 import com.ordermng.core.movement.StockMovementUseCase;
-import com.ordermng.db.item.ItemEntity;
-import com.ordermng.db.item.ItemRepository;
 import com.ordermng.db.movement.StockMovementEntity;
 import com.ordermng.db.movement.StockMovementRepository;
 
@@ -55,7 +50,7 @@ public class StockMovementApiController implements StockMovementApi {
                     stockMovementEntity = repository.save(stockMovementEntity);
 
                     body = StockMovementTransform.entityToResponse(stockMovementEntity);
-                    
+
                     return new ResponseEntity<Result>(
                         new Result(HttpStatus.OK.value(), "The stock movement has been add", body), 
                         HttpStatus.OK);

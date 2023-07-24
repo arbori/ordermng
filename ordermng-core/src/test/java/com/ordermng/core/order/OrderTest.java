@@ -27,7 +27,7 @@ public class OrderTest {
         orderItemsList.add(new OrderItem(items[0], 10.0));
         orderItemsList.add(new OrderItem(items[1], 13.0));
         
-        Order order = new Order(LocalDateTime.now(), user, orderItemsList);
+        Order order = new Order(1L, LocalDateTime.now(), user, orderItemsList);
 
         List<StockAmount> stockAmounts = new ArrayList<>();
         stockAmounts.add(new StockAmount(items[0], 200.0));

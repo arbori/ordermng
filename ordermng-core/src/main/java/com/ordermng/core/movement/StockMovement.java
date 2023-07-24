@@ -4,18 +4,20 @@ import java.time.LocalDateTime;
 
 import com.ordermng.core.item.Item;
 import com.ordermng.core.item.ItemUseCase;
+import com.ordermng.core.order.OrderItem;
+import com.ordermng.core.order.OrderUseCase;
 
 public class StockMovement {
-    private Long id;
     private LocalDateTime creationDate;
     private Item item;
+    private OrderItem orderItem;
     private Double quantity;
     private Boolean active;
 
 	boolean isValid() {
-		return ItemUseCase.isValid(item) &&
-            id != null && id > 0 &&
-            creationDate != null &&
+		return creationDate != null &&
+            ItemUseCase.isValid(item) &&
+            OrderUseCase.isValid(orderItem) &&
 			quantity != null && quantity > 0.0 &&
 			active != null;
 	}
@@ -23,8 +25,7 @@ public class StockMovement {
     public StockMovement() {
     }
 
-    public StockMovement(Long id, LocalDateTime creationDate, Item item, Double quantity, Boolean active) {
-        this.id = id;
+    public StockMovement(LocalDateTime creationDate, Item item, Double quantity, Boolean active) {
         this.creationDate = creationDate;
         this.item = item;
         this.quantity = quantity;
@@ -32,25 +33,15 @@ public class StockMovement {
     }
 
     public StockMovement(StockMovement movement) {
-        this.id = movement.id;
         this.creationDate = movement.creationDate;
         this.item = movement.item;
         this.quantity = movement.quantity;
         this.active = movement.active;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
-
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
@@ -58,15 +49,20 @@ public class StockMovement {
     public Item getItem() {
         return item;
     }
-
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    public OrderItem getOrderItem() {
+        return orderItem;
+    }
+    public void setOrderItem(OrderItem orderItem) {
+        this.orderItem = orderItem;
     }
 
     public Double getQuantity() {
         return quantity;
     }
-
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
@@ -74,7 +70,6 @@ public class StockMovement {
     public Boolean getActive() {
         return active;
     }
-
     public void setActive(Boolean active) {
         this.active = active;
     }

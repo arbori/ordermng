@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemRepository extends CrudRepository<ItemEntity, String> {
-    @Query("select i from ItemEntity i where i.code = :itemCode and i.active = true")
+    @Query("select i from ItemEntity i where i.getCode() = :itemCode and i.getActive() = true")
     Optional<ItemEntity> findActiveByCode(@Param("itemCode") String itemCode);
 
-    @Query("select i from ItemEntity i where i.active = true")
+    @Query("select i from ItemEntity i where i.getActive() = true")
     Iterable<ItemEntity> findAllActive();
 }

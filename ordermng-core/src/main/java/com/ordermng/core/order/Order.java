@@ -7,22 +7,41 @@ import java.util.List;
 import com.ordermng.core.user.User;
 
 public class Order {
+    private Long id;
     private LocalDateTime creationDate;
     private User user;
-    private List<OrderItem> orderItemsList;
+    private List<OrderItem> orderItems;
     private Boolean active;
 
-    public Order(LocalDateTime creationDate, User user, List<OrderItem> orderItemsList) {
+    public Order() {
+    }
+    public Order(Long id, LocalDateTime creationDate, User user, List<OrderItem> orderItems) {
+        this.id = id;
         this.creationDate = creationDate;
         this.user = user;
-        this.orderItemsList = new ArrayList<>();
+        this.orderItems = new ArrayList<>();
         this.active = true;
 
-        this.orderItemsList.addAll(orderItemsList);
+        this.orderItems.addAll(orderItems);
 
         // TODO Every attributes need to be not null and orderItemsList must have almost one item inside.
     }
+    public Order(Order o) {
+        this.id = o.id;
+        this.creationDate = o.creationDate;
+        this.user = o.user;
+        this.orderItems = new ArrayList<>();
+        this.active = o.active;
 
+        this.orderItems.addAll(o.orderItems);
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
@@ -35,11 +54,8 @@ public class Order {
     public void setUser(User user) {
         this.user = user;
     }
-    public List<OrderItem> getOrderItemsList() {
-        return orderItemsList;
-    }
-    public void addItemOrder(OrderItem itemOrder) {
-        this.orderItemsList.add(itemOrder);
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
     public Boolean getActive() {
         return active;
@@ -50,35 +66,19 @@ public class Order {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder()
-            .append("{\"creationDate\"=\"").append(creationDate).append("\"")
-            .append(", \"user\"=").append(user)
-            .append(", \"orderItemsList\"=[");
-
-        int size = this.orderItemsList.size();
-
-        for(int i = 0; i < size; i++) {
-            OrderItem item = this.orderItemsList.get(i);
-
-            sb.append(item.toString()).append(i < size - 1 ? ", " : "");
-        }
-        
-        sb.append("], \"active\"=\"").append(active).append("\"}");
-        
-        return sb.toString();
+        return new StringBuilder().append("Order [id=").append(id).append(", creationDate=").append(creationDate).append(", user=").append(user).append(", orderItemsList=").append(orderItems).append(", active=").append(active).append("]").toString();
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int[] result = new int[] {1};
-
-        result[0] = prime * result[0] + ((creationDate == null) ? 0 : creationDate.hashCode());
-        result[0] = prime * result[0] + ((user == null) ? 0 : user.hashCode());
-        this.orderItemsList.stream().forEach(item -> result[0] = prime * result[0] + ((item == null) ? 0 : item.hashCode()));
-        result[0] = prime * result[0] + ((active == null) ? 0 : active.hashCode());
-        
-        return result[0];
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        result = prime * result + ((orderItems == null) ? 0 : orderItems.hashCode());
+        result = prime * result + ((active == null) ? 0 : active.hashCode());
+        return result;
     }
 
     @Override
@@ -90,6 +90,11 @@ public class Order {
         if (getClass() != obj.getClass())
             return false;
         Order other = (Order) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
         if (creationDate == null) {
             if (other.creationDate != null)
                 return false;
@@ -100,23 +105,16 @@ public class Order {
                 return false;
         } else if (!user.equals(other.user))
             return false;
-
-        if(this.orderItemsList.size() != other.getOrderItemsList().size()) {
+        if (orderItems == null) {
+            if (other.orderItems != null)
+                return false;
+        } else if (!orderItems.equals(other.orderItems))
             return false;
-        } else {
-            for(OrderItem item: this.orderItemsList) {
-                if (!other.getOrderItemsList().contains(item)) {
-                    return false;
-                }
-            }
-        }
-
-
         if (active == null) {
             if (other.active != null)
                 return false;
         } else if (!active.equals(other.active))
             return false;
         return true;
-    }   
+    }
 }
