@@ -3,9 +3,9 @@ package com.ordermng.core.order;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.ordermng.core.item.Item;
 import com.ordermng.core.item.ItemUseCase;
 import com.ordermng.core.movement.StockMovement;
+import com.ordermng.core.user.UserUseCase;
 
 public class OrderUseCase {
     private OrderUseCase() {
@@ -21,6 +21,14 @@ public class OrderUseCase {
                 o.addStockMovement(new StockMovement(LocalDateTime.now(), o.getItem(), quantity, true));
             });
         });
+    }
+
+    public static boolean isValid(Order order) {
+        return order.getId() != null &&
+            order.getCreationDate() != null &&
+            UserUseCase.isValid(order.getUser()) &&
+            order.getOrderItems() != null && !order.getOrderItems().isEmpty() &&
+            order.getActive() != null;
     }
 
     public static boolean isValid(OrderItem orderItem) {

@@ -1,7 +1,5 @@
 package com.ordermng.api.transform;
 
-import javax.validation.Valid;
-
 import com.ordermng.api.model.User;
 import com.ordermng.db.user.UserEntity;
 
@@ -9,7 +7,7 @@ public class UserTransform {
     private UserTransform() {
     }
 
-    public static UserEntity requestToEntity(@Valid User request) {
+    public static UserEntity requestToEntity(User request) {
         return new UserEntity(null, request.getEmail(), request.getName(), true);
     }
 

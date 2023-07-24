@@ -27,11 +27,11 @@ public class UserEntity extends User {
 		this.id = user.getId();
 	}
 
+	private Long id;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
-	private Long id;
-
 	public Long getId() {
 		return id;
 	}

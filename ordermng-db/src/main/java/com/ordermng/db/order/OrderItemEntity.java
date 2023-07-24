@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -33,10 +35,11 @@ public class OrderItemEntity extends OrderItem {
         movements.forEach(super::addStockMovement);
     }
 
-   	@Id
-	@Column(name = "orderitem_id")
 	private Long id;
 
+   	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "orderitem_id")
 	public Long getId() {
 		return id;
 	}
@@ -66,11 +69,14 @@ public class OrderItemEntity extends OrderItem {
         return (StockMovementEntity) super.getMovements().get(index);
     }
 
-	@OneToMany(mappedBy = "OrderItemEntity", fetch = FetchType.EAGER)
+    private List<StockMovementEntity> movementsEntity = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "movement_orderitem_id")
     public List<StockMovementEntity> getMovementEntities() {
-        List<StockMovementEntity> result = new ArrayList<>();
-        super.getMovements().forEach(m -> result.add((StockMovementEntity) m));
-        return result;
+        movementsEntity.clear();
+        super.getMovements().forEach(m -> movementsEntity.add((StockMovementEntity) m));
+        return movementsEntity;
     }
     public void setMovementEntities(List<StockMovementEntity> movements) {
         super.getMovements().clear();

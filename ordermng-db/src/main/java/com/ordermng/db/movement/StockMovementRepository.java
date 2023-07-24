@@ -12,6 +12,6 @@ public interface StockMovementRepository extends CrudRepository<StockMovementEnt
     @Query("select m from StockMovementEntity m where m.getId() = :id and m.getActive() = true")
     Optional<StockMovementEntity> findActiveById(@Param("id") Long id);
 
-    @Query("select m from StockMovementEntity m where m.getActive() = true")
+    @Query("select m from StockMovementEntity m where m.active = true")
     Iterable<StockMovementEntity> findAllActive();
 }

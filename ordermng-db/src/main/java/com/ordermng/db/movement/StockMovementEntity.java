@@ -31,13 +31,15 @@ public class StockMovementEntity extends StockMovement {
 	}
 	public StockMovementEntity(StockMovementEntity movement) {
 		super(movement);
+
+		setId(movement.getId());
 	}
+
+	private Long id;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "movement_id")
-	private Long id;
-
 	public Long getId() {
 		return id;
 	}
@@ -78,15 +80,14 @@ public class StockMovementEntity extends StockMovement {
 	}
 
 	@Column(name = "movement_active")
-	// private Boolean active;
 	@Override
 	public Boolean getActive() {
 		return super.getActive();
 	}
-    // public void setActive(Boolean active) {
-	// 	this.active = active;
-    //     super.setActive(active);
-    // }
+
+    @ManyToOne
+    @JoinColumn(name = "movement_orderitem_id")
+    private OrderItemEntity orderItemEntity;
 
 	@Override
 	public int hashCode() {

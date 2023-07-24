@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.ordermng.core.order.Order;
+import com.ordermng.core.order.OrderItem;
+import com.ordermng.core.user.User;
 import com.ordermng.db.user.UserEntity;
 
 import java.time.LocalDateTime;
@@ -58,14 +60,52 @@ public class OrderEntity extends Order {
         return (OrderItemEntity) super.getOrderItems().get(index);
     }
 
-	@OneToMany(mappedBy="orderEntity", fetch = FetchType.EAGER)
-    public List<OrderItemEntity> getMovementsEntity() {
-        List<OrderItemEntity> result = new ArrayList<>();
-        super.getOrderItems().forEach(m -> result.add((OrderItemEntity) m));
-        return result;
+	private List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
+
+	@OneToMany
+    @JoinColumn(name = "orderitem_order_id")
+    public List<OrderItemEntity> getOrderItemsEntity() {
+        orderItemsEntity.clear();
+        super.getOrderItems().forEach(m -> orderItemsEntity.add((OrderItemEntity) m));
+        return orderItemsEntity;
     }
-    public void setMovementsEntity(List<OrderItemEntity> orderItemEntities) {
+    public void setOrderItemsEntity(List<OrderItemEntity> orderItemEntities) {
         super.getOrderItems().clear();
 		super.getOrderItems().addAll(orderItemEntities);
     }
+
+    public OrderEntity() {
+		super();
+    }
+    public OrderEntity(Long id, LocalDateTime creationDate, User user, List<OrderItem> orderItems) {
+        super(id, creationDate, user, orderItems);
+    }
+    public OrderEntity(OrderEntity orderEntity) {
+        super(orderEntity);
+    }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((orderItemsEntity == null) ? 0 : orderItemsEntity.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OrderEntity other = (OrderEntity) obj;
+		if (orderItemsEntity == null) {
+			if (other.orderItemsEntity != null)
+				return false;
+		} else if (!orderItemsEntity.equals(other.orderItemsEntity))
+			return false;
+		return true;
+	}
 }
