@@ -24,10 +24,9 @@ public class OrderUseCase {
     }
 
     public static boolean isValid(Order order) {
-        return order.getId() != null &&
-            order.getCreationDate() != null &&
+        return order.getCreationDate() != null &&
             UserUseCase.isValid(order.getUser()) &&
-            order.getOrderItems() != null && !order.getOrderItems().isEmpty() &&
+            //order.getOrderItems() != null && !order.getOrderItems().isEmpty() &&
             order.getActive() != null;
     }
 

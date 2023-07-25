@@ -10,9 +10,9 @@ public class Order {
     private Long id;
     private LocalDateTime creationDate;
     private User user;
-    private List<OrderItem> orderItems;
-    private Boolean shipped;
-    private Boolean active;
+    private List<OrderItem> orderItems = new ArrayList<>();
+    private Boolean shipped = false;
+    private Boolean active = true;
 
     public Order() {
     }
@@ -20,11 +20,9 @@ public class Order {
         this.id = id;
         this.creationDate = creationDate;
         this.user = user;
-        this.orderItems = new ArrayList<>();
+        this.orderItems.addAll(orderItems);
         this.shipped = false;
         this.active = true;
-
-        this.orderItems.addAll(orderItems);
 
         // TODO Every attributes need to be not null and orderItemsList must have almost one item inside.
     }
@@ -32,11 +30,9 @@ public class Order {
         this.id = o.id;
         this.creationDate = o.creationDate;
         this.user = o.user;
-        this.orderItems = new ArrayList<>();
+        this.orderItems.addAll(o.orderItems);
         this.shipped = o.shipped;
         this.active = o.active;
-
-        this.orderItems.addAll(o.orderItems);
     }
 
     public Long getId() {

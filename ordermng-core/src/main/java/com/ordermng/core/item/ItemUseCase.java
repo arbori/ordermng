@@ -11,7 +11,7 @@ public class ItemUseCase {
     }
 
     public static boolean isValid(Item item) {
-        boolean valid = item.isValid() && item.getCode().length() <= CODE_SIZE && item.getName().length() <= NAME_SIZE;
+        boolean valid = item.isValid() && item.getCode() != null && item.getCode().length() <= CODE_SIZE && item.getName().length() <= NAME_SIZE;
 
         if(valid) {
             try {

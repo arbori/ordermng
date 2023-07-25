@@ -3,13 +3,12 @@ package com.ordermng.core.user;
 public class User {
 	protected String email;
 	protected String name;
-	protected Boolean active;
+	protected Boolean active = true;
 
 	boolean isValid() {
 		return email != null && !email.isEmpty() &&
 			name != null && !name.isEmpty() &&
 			active != null;
-
 	}
 
 	public User() {

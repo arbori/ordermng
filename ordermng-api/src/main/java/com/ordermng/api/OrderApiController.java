@@ -2,12 +2,12 @@ package com.ordermng.api;
 
 import com.ordermng.api.model.Order;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.model.User;
 import com.ordermng.api.transform.OrderTransform;
-import com.ordermng.api.transform.UserTransform;
 import com.ordermng.core.order.OrderUseCase;
-import com.ordermng.core.user.UserUseCase;
+import com.ordermng.db.item.ItemRepository;
 import com.ordermng.db.order.OrderEntity;
+import com.ordermng.db.order.OrderItemEntity;
+import com.ordermng.db.order.OrderItemRepository;
 import com.ordermng.db.order.OrderRepository;
 import com.ordermng.db.user.UserEntity;
 import com.ordermng.db.user.UserRepository;
@@ -36,12 +36,18 @@ public class OrderApiController implements OrderApi {
 
     private final HttpServletRequest request;
 
-    private final OrderRepository repository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository; 
 
     @org.springframework.beans.factory.annotation.Autowired
-    public OrderApiController(HttpServletRequest request, OrderRepository repository) {
+    public OrderApiController(HttpServletRequest request, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserRepository userRepository, ItemRepository itemRepository) {
         this.request = request;
-        this.repository = repository;
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.userRepository = userRepository;
+        this.itemRepository = itemRepository;
     }
 
     public ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body) {
@@ -51,11 +57,25 @@ public class OrderApiController implements OrderApi {
             try {
                 OrderEntity orderEntity = OrderTransform.requestToEntity(body);
 
+                List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
+        
+                body.getOrderItems().forEach(oapi -> {
+                    OrderItemEntity orderItemEntity = OrderTransform.requestToEntity(oapi);
+                    orderItemEntity.setOrderEntity(orderEntity);
+        
+                    orderItemsEntity.add(orderItemEntity);
+                });
+        
                 if(OrderUseCase.isValid(orderEntity)) {
-                    repository.save(orderEntity);
+                    orderEntity.setUser(userRepository.findAndFillUser((UserEntity) orderEntity.getUser()));
+
+                    itemRepository.checkItensInOrderItems(orderEntity.getOrderItemsEntity());
+
+                    orderRepository.save(orderEntity);
+                    orderItemRepository.saveAll(orderItemsEntity);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The user has been add", body), 
+                        new Result(HttpStatus.OK.value(), "The order has been add", body), 
                         HttpStatus.OK);
                 }
 
@@ -81,7 +101,7 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<OrderEntity> optionalUserEntity = repository.findActiveById(id);
+                Optional<OrderEntity> optionalUserEntity = orderRepository.findById(id);
 
                 if(optionalUserEntity.isPresent()) {
                     optionalUserEntity.get().setActive(false);
@@ -117,7 +137,7 @@ public class OrderApiController implements OrderApi {
             try {
                 List<Order> list = new ArrayList<>();
 
-                repository.findAllActive().forEach(o -> list.add(OrderTransform.entityToResponse(o)));
+                orderRepository.findAllActive().forEach(o -> list.add(OrderTransform.entityToResponse(o)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -139,14 +159,14 @@ public class OrderApiController implements OrderApi {
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<OrderEntity> optionalOrder = repository.findActiveById(body.getId());
+                Optional<OrderEntity> optionalOrder = orderRepository.findActiveById(body.getId());
                 OrderEntity orderEntity = OrderTransform.requestToEntity(body);
 
                 if(optionalOrder.isPresent() && OrderUseCase.isValid(orderEntity)) {
                     OrderTransform.updateEntity(optionalOrder.get(), orderEntity);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", OrderTransform.entityToResponse(repository.save(optionalOrder.get()))), 
+                        new Result(HttpStatus.OK.value(), "", OrderTransform.entityToResponse(orderRepository.save(optionalOrder.get()))), 
                         HttpStatus.OK);
                 }
 

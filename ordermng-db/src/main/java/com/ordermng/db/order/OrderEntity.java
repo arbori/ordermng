@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 
 @Entity
@@ -59,16 +60,16 @@ public class OrderEntity extends Order {
 		return super.getActive();
 	}	
 	
-    public void add(OrderItemEntity entity) {
+    public void addOrderItem(OrderItemEntity entity) {
         super.getOrderItems().add(entity);
     }
-    public OrderItemEntity get(int index) {
+    public OrderItemEntity getOrderItem(int index) {
         return (OrderItemEntity) super.getOrderItems().get(index);
     }
 
 	private List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "orderitem_order_id")
     public List<OrderItemEntity> getOrderItemsEntity() {
         orderItemsEntity.clear();
@@ -77,7 +78,10 @@ public class OrderEntity extends Order {
     }
     public void setOrderItemsEntity(List<OrderItemEntity> orderItemEntities) {
         super.getOrderItems().clear();
-		super.getOrderItems().addAll(orderItemEntities);
+		
+		if(orderItemEntities != null && !orderItemEntities.isEmpty()) {
+			super.getOrderItems().addAll(orderItemEntities);
+		}
     }
 
     public OrderEntity() {

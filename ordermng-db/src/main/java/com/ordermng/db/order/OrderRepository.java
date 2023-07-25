@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepository extends CrudRepository<OrderEntity, Long> {
-    @Query("select o from OrderEntity o where o.getId() = :id and m.getActive() = true")
+    @Query("select o from OrderEntity o where o.id = :id and o.active = true")
     Optional<OrderEntity> findActiveById(@Param("id") Long id);
 
-    @Query("select o from OrderEntity o where o.getActive() = true")
+    @Query("select o from OrderEntity o where o.active = true")
     Iterable<OrderEntity> findAllActive();
 }
 

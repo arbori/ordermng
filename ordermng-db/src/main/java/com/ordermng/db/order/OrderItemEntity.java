@@ -3,6 +3,7 @@ package com.ordermng.db.order;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -83,9 +84,16 @@ public class OrderItemEntity extends OrderItem {
         movements.forEach(super::addStockMovement);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "orderitem_order_id")
     private OrderEntity orderEntity;
+
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name = "orderitem_order_id")
+    public OrderEntity getOrderEntity() {
+        return this.orderEntity;
+    }
+    public void setOrderEntity(OrderEntity orderEntity) {
+        this.orderEntity = orderEntity;
+    }
 
     @Override
     public int hashCode() {

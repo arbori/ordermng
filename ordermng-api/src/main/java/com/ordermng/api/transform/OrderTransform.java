@@ -18,22 +18,28 @@ public class OrderTransform {
     }
 
     public static OrderEntity requestToEntity(Order orderRequest) {
-        UserEntity userEntity = UserTransform.requestToEntity(orderRequest.getUser());
-        List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
-        
-        orderRequest.getOrderItems().forEach(oapi -> orderItemsEntity.add(OrderTransform.requestToEntity(oapi)));
-
         OrderEntity orderEntity = new OrderEntity();
+
+        UserEntity userEntity = UserTransform.requestToEntity(orderRequest.getUser());
+
+        // List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
+        
+        // orderRequest.getOrderItems().forEach(oapi -> {
+        //     OrderItemEntity orderItemEntity = OrderTransform.requestToEntity(oapi);
+        //     orderItemEntity.setOrderEntity(orderEntity);
+
+        //     orderItemsEntity.add(orderItemEntity);
+        // });
+
         orderEntity.setId(orderRequest.getId());
         orderEntity.setCreationDate(orderRequest.getCreationDate());
         orderEntity.setUser(userEntity);
-        orderEntity.setOrderItemsEntity(orderItemsEntity);
-        orderEntity.setShipped(orderRequest.getShipped());
+        // orderEntity.setOrderItemsEntity(orderItemsEntity);
 
         return orderEntity;
     }    
 
-    private static OrderItemEntity requestToEntity(OrderItem oapi) {
+    public static OrderItemEntity requestToEntity(OrderItem oapi) {
         return new OrderItemEntity(ItemTransform.requestToEntity(oapi.getItem()), oapi.getQuantity());
     }
 

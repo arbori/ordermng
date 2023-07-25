@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockMovementRepository extends CrudRepository<StockMovementEntity, Long> {
-    @Query("select m from StockMovementEntity m where m.getId() = :id and m.getActive() = true")
+    @Query("select m from StockMovementEntity m where m.id = :id and m.active = true")
     Optional<StockMovementEntity> findActiveById(@Param("id") Long id);
 
     @Query("select m from StockMovementEntity m where m.active = true")
