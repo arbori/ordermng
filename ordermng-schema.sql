@@ -25,6 +25,7 @@ create table ordermng_order (
 	order_id INT not null generated always as identity,
 	order_creation_date TIMESTAMP not null,
 	order_user_id INT not null references ordermng_user (user_id),
+	order_shipped BOOLEAN not null,
 	order_active BOOLEAN not null,
 	CONSTRAINT ordermng_order_pkey PRIMARY KEY (order_id)
 );

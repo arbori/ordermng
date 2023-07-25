@@ -7,7 +7,6 @@ import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Order;
 import com.ordermng.api.model.OrderItem;
 import com.ordermng.api.model.StockMovement;
-import com.ordermng.api.model.User;
 import com.ordermng.db.item.ItemEntity;
 import com.ordermng.db.movement.StockMovementEntity;
 import com.ordermng.db.order.OrderEntity;
@@ -29,6 +28,7 @@ public class OrderTransform {
         orderEntity.setCreationDate(orderRequest.getCreationDate());
         orderEntity.setUser(userEntity);
         orderEntity.setOrderItemsEntity(orderItemsEntity);
+        orderEntity.setShipped(orderRequest.getShipped());
 
         return orderEntity;
     }    
@@ -65,14 +65,23 @@ public class OrderTransform {
 
         return new Order().id(o.getId())
             .creationDate(o.getCreationDate())
-            .user(UserTransform.entityToResponse((UserEntity) o.getUser())).orderItems(orderItems);
+            .user(UserTransform.entityToResponse((UserEntity) o.getUser()))
+            .orderItems(orderItems)
+            .shipped(o.getShipped())
+            .active(o.getActive());
     }
 
     public static void updateEntity(ItemEntity tar, ItemEntity src) {
         tar.setName(src.getName());
     }
 
-    public static void updateEntity(OrderEntity orderEntity, OrderEntity orderEntity2) {
-    }
+    public static void updateEntity(OrderEntity tar, OrderEntity src) {
+        tar.setCreationDate(src.getCreationDate());
+        tar.setActive(src.getActive());
+        tar.setShipped(src.getShipped());
+        tar.setUser(src.getUser());
 
+        tar.getOrderItemsEntity().clear();
+        tar.getOrderItemsEntity().addAll(src.getOrderItemsEntity());
+    }
 }

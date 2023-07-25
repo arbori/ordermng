@@ -11,6 +11,7 @@ public class Order {
     private LocalDateTime creationDate;
     private User user;
     private List<OrderItem> orderItems;
+    private Boolean shipped;
     private Boolean active;
 
     public Order() {
@@ -20,6 +21,7 @@ public class Order {
         this.creationDate = creationDate;
         this.user = user;
         this.orderItems = new ArrayList<>();
+        this.shipped = false;
         this.active = true;
 
         this.orderItems.addAll(orderItems);
@@ -31,6 +33,7 @@ public class Order {
         this.creationDate = o.creationDate;
         this.user = o.user;
         this.orderItems = new ArrayList<>();
+        this.shipped = o.shipped;
         this.active = o.active;
 
         this.orderItems.addAll(o.orderItems);
@@ -57,6 +60,12 @@ public class Order {
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
+    public Boolean getShipped() {
+        return shipped;
+    }
+    public void setShipped(Boolean shipped) {
+        this.shipped = shipped;
+    }
     public Boolean getActive() {
         return active;
     }
@@ -66,7 +75,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("Order [id=").append(id).append(", creationDate=").append(creationDate).append(", user=").append(user).append(", orderItemsList=").append(orderItems).append(", active=").append(active).append("]").toString();
+        return new StringBuilder().append("Order [id=").append(id).append(", creationDate=").append(creationDate).append(", user=").append(user).append(", orderItemsList=").append(orderItems).append(", shipped=").append(shipped).append(", active=").append(active).append("]").toString();
     }
 
     @Override
@@ -77,6 +86,7 @@ public class Order {
         result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
         result = prime * result + ((user == null) ? 0 : user.hashCode());
         result = prime * result + ((orderItems == null) ? 0 : orderItems.hashCode());
+        result = prime * result + ((shipped == null) ? 0 : shipped.hashCode());
         result = prime * result + ((active == null) ? 0 : active.hashCode());
         return result;
     }
@@ -109,6 +119,11 @@ public class Order {
             if (other.orderItems != null)
                 return false;
         } else if (!orderItems.equals(other.orderItems))
+            return false;
+        if (shipped == null) {
+            if (other.shipped != null)
+                return false;
+        } else if (!shipped.equals(other.shipped))
             return false;
         if (active == null) {
             if (other.active != null)

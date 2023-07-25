@@ -47,6 +47,12 @@ public class OrderEntity extends Order {
 		super.setUser(userEntity);
 	}
 
+	@Column(name = "order_shipped")
+	@Override
+	public Boolean getShipped() {
+		return super.getShipped();
+	}	
+
 	@Column(name = "order_active")
 	@Override
 	public Boolean getActive() {

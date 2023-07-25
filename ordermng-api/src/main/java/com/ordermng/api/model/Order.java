@@ -17,6 +17,8 @@ public class Order   {
   private User user;
   @JsonProperty("orderItems")
   private List<OrderItem> orderItems;
+  @JsonProperty("shipped")
+  private Boolean shipped;
   @JsonProperty("active")
   private Boolean active;
 
@@ -66,6 +68,18 @@ public class Order   {
   }
   public void setOrderItems(List<OrderItem> orderItems) {
     this.orderItems = orderItems;
+  }
+
+  public Order shipped(Boolean shipped) {
+    this.shipped = shipped;
+    return this;
+  }
+  @Schema(example = "", description = "")
+  public Boolean getShipped() {
+    return shipped;
+  }
+  public void setShipped(Boolean shipped) {
+    this.shipped = shipped;
   }
 
   public Order active(Boolean active) {
