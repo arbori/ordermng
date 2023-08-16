@@ -14,4 +14,7 @@ public interface StockMovementRepository extends CrudRepository<StockMovementEnt
 
     @Query("select m from StockMovementEntity m where m.active = true")
     Iterable<StockMovementEntity> findAllActive();
+
+    @Query("select sum(m.quantity) as amount from StockMovementEntity m where m.itemEntity.code = :itemCode")
+    Optional<Double> computeAmountByItemCode(@Param("itemCode") String itemCode);
 }

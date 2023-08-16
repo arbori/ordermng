@@ -1,14 +1,14 @@
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
+import com.ordermng.api.component.ItemComponent;
+import com.ordermng.api.model.ItemRequest;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.transform.ItemTransform;
-import com.ordermng.core.item.ItemUseCase;
-import com.ordermng.db.item.ItemEntity;
-import com.ordermng.db.item.ItemRepository;
+import com.ordermng.core.dto.ItemDTO;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,26 +30,30 @@ public class ItemApiController implements ItemApi {
 
     private final HttpServletRequest request;
 
-    private final ItemRepository repository;
+    private final ItemComponent itemComponent;
+
+    private final ModelMapper modelMapper;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ItemApiController(HttpServletRequest request, ItemRepository repository) {
+    public ItemApiController(HttpServletRequest request, ItemComponent repository) {
         this.request = request;
-        this.repository = repository;
+        this.itemComponent = repository;
+
+        this.modelMapper = new ModelMapper();
     }
 
-    public ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body) {
+    public ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody ItemRequest body) {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                ItemEntity itemEntity = ItemTransform.requestToEntity(body);
+                ItemDTO item = modelMapper.map(body, ItemDTO.class);
 
-                if(ItemUseCase.isValid(itemEntity)) {
-                    repository.save(itemEntity);
+                if(itemComponent.isValid(item)) {
+                    String itemCode = itemComponent.addNewItem(item);
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The item has been add", body.getCode()), 
+                        new Result(HttpStatus.OK.value(), "The item has been add", itemCode), 
                         HttpStatus.OK);
                 }
 
@@ -75,15 +79,11 @@ public class ItemApiController implements ItemApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<ItemEntity> optionalItemEntity = repository.findActiveByCode(code);
+                Optional<String> itemCodeOptional = itemComponent.inactiveItem(code);
 
-                if(optionalItemEntity.isPresent()) {
-                    optionalItemEntity.get().setActive(false);
-
-                    repository.save(optionalItemEntity.get());
-
+                if(itemCodeOptional.isPresent()) {
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The item has been deleted", code), 
+                        new Result(HttpStatus.OK.value(), "The item has been deleted", itemCodeOptional.get()), 
                         HttpStatus.OK);
                 }
 
@@ -109,9 +109,9 @@ public class ItemApiController implements ItemApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                List<Item> list = new ArrayList<>();
+                List<ItemRequest> list = new ArrayList<>();
 
-                repository.findAllActive().forEach(o -> list.add(ItemTransform.entityToResponse(o)));
+                itemComponent.findAllActive().forEach(o -> list.add(modelMapper.map(o, ItemRequest.class)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -128,19 +128,16 @@ public class ItemApiController implements ItemApi {
             HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body) {
+    public ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody ItemRequest body) {
         String accept = request.getHeader("Accept");
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<ItemEntity> optionalUser = repository.findActiveByCode(body.getCode());
-                ItemEntity itemEntity = ItemTransform.requestToEntity(body);
+                Optional<ItemDTO> optionalItem = itemComponent.updateEntity(modelMapper.map(body, ItemDTO.class));
 
-                if(optionalUser.isPresent() && ItemUseCase.isValid(itemEntity)) {
-                    ItemTransform.updateEntity(optionalUser.get(), itemEntity);
-
+                if(optionalItem.isPresent()) {
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", ItemTransform.entityToResponse(repository.save(optionalUser.get()))), 
+                        new Result(HttpStatus.OK.value(), "", modelMapper.map(itemComponent.save(optionalItem.get()), ItemRequest.class)), 
                         HttpStatus.OK);
                 }
 

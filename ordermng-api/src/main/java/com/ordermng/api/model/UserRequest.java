@@ -12,17 +12,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 
-public class User {
+public class UserRequest {
 	@JsonProperty("email")
 	private String email;
 
 	@JsonProperty("name")
 	private String name;
 
-	@JsonProperty("active")
-	private Boolean active;
-
-	public User email(String email) {
+	public UserRequest email(String email) {
 		this.email = email;
 		return this;
 	}
@@ -42,7 +39,7 @@ public class User {
 		this.email = email;
 	}
 
-	public User name(String name) {
+	public UserRequest name(String name) {
 		this.name = name;
 		return this;
 	}
@@ -60,25 +57,5 @@ public class User {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public User active(Boolean active) {
-		this.active = active;
-		return this;
-	}
-
-	/**
-	 * Get code
-	 * 
-	 * @return code
-	 **/
-	@Schema(example = "", description = "")
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
 	}
 }

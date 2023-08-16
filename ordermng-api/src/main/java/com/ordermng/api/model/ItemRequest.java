@@ -12,14 +12,14 @@ import org.springframework.validation.annotation.Validated;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 
 
-public class Item   {
+public class ItemRequest   {
   @JsonProperty("code")
   private String code = null;
 
   @JsonProperty("name")
   private String name = null;
 
-  public Item code(String code) {
+  public ItemRequest code(String code) {
     this.code = code;
     return this;
   }
@@ -38,7 +38,7 @@ public class Item   {
     this.code = code;
   }
 
-  public Item name(String name) {
+  public ItemRequest name(String name) {
     this.name = name;
     return this;
   }
@@ -66,7 +66,7 @@ public class Item   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Item item = (Item) o;
+    ItemRequest item = (ItemRequest) o;
     return Objects.equals(this.code, item.code) &&
         Objects.equals(this.name, item.name);
   }

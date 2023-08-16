@@ -1,34 +1,28 @@
-package com.ordermng.core.user;
+package com.ordermng.core.dto;
 
-public class User {
-	protected String email;
-	protected String name;
-	protected Boolean active = true;
+public class ItemDTO {
+	private String code;
+	private String name;
+	private Boolean active;
 
-	boolean isValid() {
-		return email != null && !email.isEmpty() &&
-			name != null && !name.isEmpty() &&
-			active != null;
+	public ItemDTO() {
 	}
-
-	public User() {
-	}
-	public User(String email, String name, Boolean active) {
-		this.email = email;
+	public ItemDTO(String code, String name, Boolean active) {
+		this.code = code;
 		this.name = name;
 		this.active = active;
 	}
-	public User(User user) {
-		this.email = user.email;
-		this.name = user.name;
-		this.active = user.active;
+	public ItemDTO(ItemDTO item) {
+		this.code = item.code;
+		this.name = item.name;
+		this.active = item.active;
 	}
-
-	public String getEmail() {
-		return email;
+	
+	public String getCode() {
+		return code;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setCode(String code) {
+		this.code = code;
 	}
 	public String getName() {
 		return name;
@@ -45,14 +39,14 @@ public class User {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("User [email=").append(email).append(", name=").append(name).append(", active=").append(active).append("]").toString();
+		return "Item [code=" + code + ", name=" + name + ", active=" + active + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((code == null) ? 0 : code.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((active == null) ? 0 : active.hashCode());
 		return result;
@@ -66,11 +60,11 @@ public class User {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null)
+		ItemDTO other = (ItemDTO) obj;
+		if (code == null) {
+			if (other.code != null)
 				return false;
-		} else if (!email.equals(other.email))
+		} else if (!code.equals(other.code))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -84,5 +78,4 @@ public class User {
 			return false;
 		return true;
 	}
-
 }

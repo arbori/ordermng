@@ -10,13 +10,11 @@ import org.springframework.context.annotation.Configuration;
 public class DataSourceConfig {
     @Bean
     public DataSource getDataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-
-        dataSourceBuilder.driverClassName("org.postgresql.Driver");
-        dataSourceBuilder.url("jdbc:postgresql://localhost:5432/postgres");
-        dataSourceBuilder.username("postgres");
-        dataSourceBuilder.password("1234");
-
-        return dataSourceBuilder.build();
+        return DataSourceBuilder.create()
+            .driverClassName("org.postgresql.Driver")
+            .url("jdbc:postgresql://localhost:5432/postgres")
+            .username("postgres")
+            .password("1234")
+            .build();
     }
 }

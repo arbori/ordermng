@@ -1,36 +1,34 @@
-package com.ordermng.core.order;
+package com.ordermng.core.dto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ordermng.core.user.User;
-
-public class Order {
+public class OrderDTO {
     private Long id;
     private LocalDateTime creationDate;
-    private User user;
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private UserDTO user;
+    private OrderType type;
+    private List<OrderItemDTO> orderItems = new ArrayList<>();
     private Boolean shipped = false;
     private Boolean active = true;
 
-    public Order() {
+    public OrderDTO() {
     }
-    public Order(Long id, LocalDateTime creationDate, User user, List<OrderItem> orderItems) {
+
+    public OrderDTO(Long id, LocalDateTime creationDate, UserDTO user, OrderType type, List<OrderItemDTO> orderItems) {
         this.id = id;
         this.creationDate = creationDate;
         this.user = user;
-        this.orderItems.addAll(orderItems);
-        this.shipped = false;
-        this.active = true;
-
-        // TODO Every attributes need to be not null and orderItemsList must have almost one item inside.
+        this.type = type;
+        setOrderItems(orderItems);
     }
-    public Order(Order o) {
+    
+    public OrderDTO(OrderDTO o) {
         this.id = o.id;
         this.creationDate = o.creationDate;
         this.user = o.user;
-        this.orderItems.addAll(o.orderItems);
+        setOrderItems(o.getOrderItems());
         this.shipped = o.shipped;
         this.active = o.active;
     }
@@ -47,14 +45,24 @@ public class Order {
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
-    public List<OrderItem> getOrderItems() {
+    public OrderType getType() {
+        return type;
+    }
+    public void setType(OrderType type) {
+        this.type = type;
+    }
+    public List<OrderItemDTO> getOrderItems() {
         return orderItems;
+    }
+    public void setOrderItems(List<OrderItemDTO> orderItems) {
+        this.orderItems.clear();
+        orderItems.forEach(oi -> this.orderItems.add(new OrderItemDTO(oi)));
     }
     public Boolean getShipped() {
         return shipped;
@@ -95,7 +103,7 @@ public class Order {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Order other = (Order) obj;
+        OrderDTO other = (OrderDTO) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

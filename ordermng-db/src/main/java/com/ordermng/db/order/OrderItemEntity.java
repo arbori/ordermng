@@ -15,108 +15,44 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.ordermng.core.order.OrderItem;
 import com.ordermng.db.item.ItemEntity;
 import com.ordermng.db.movement.StockMovementEntity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@Data
+@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name =  "ordermng_order_item")
-public class OrderItemEntity extends OrderItem {
-    public OrderItemEntity() {
-        super();
-    }
-
-    public OrderItemEntity(ItemEntity item, Double quantity) {
-        super(item, quantity);
-    }
-
-    public OrderItemEntity(ItemEntity item, Double quantity, List<StockMovementEntity> movements) {
-        super(item, quantity);
-
-        movements.forEach(super::addStockMovement);
-    }
-
-	private Long id;
-
+public class OrderItemEntity {
    	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "orderitem_id")
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "orderitem_item_code")
-    public ItemEntity getItemEntity() {
-        return (ItemEntity) super.getItem();
-    }
-    public void setItemEntity(ItemEntity itemEntity) {
-        super.setItem(itemEntity);
-    }
-
-	@Column(name = "orderitem_quantity")
-    @Override
-    public Double getQuantity() {
-        return super.getQuantity();
-    }
-    
-    public void addStockMovement(StockMovementEntity entity) {
-        super.addStockMovement(entity);
-    }
-    public StockMovementEntity getStockMovement(int index) {
-        return (StockMovementEntity) super.getMovements().get(index);
-    }
-
-    private List<StockMovementEntity> movementsEntity = new ArrayList<>();
-
-    @OneToMany
-    @JoinColumn(name = "movement_orderitem_id")
-    public List<StockMovementEntity> getMovementEntities() {
-        movementsEntity.clear();
-        super.getMovements().forEach(m -> movementsEntity.add((StockMovementEntity) m));
-        return movementsEntity;
-    }
-    public void setMovementEntities(List<StockMovementEntity> movements) {
-        super.getMovements().clear();
-        movements.forEach(super::addStockMovement);
-    }
-
-    private OrderEntity orderEntity;
+	private Long orderItemId;
 
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "orderitem_order_id")
-    public OrderEntity getOrderEntity() {
-        return this.orderEntity;
-    }
-    public void setOrderEntity(OrderEntity orderEntity) {
+    private OrderEntity orderEntity;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "orderitem_item_code")
+    private ItemEntity itemEntity;
+
+    @Column(name = "orderitem_quantity")
+    private Double quantity;
+
+    @OneToMany
+    @JoinColumn(name = "movement_orderitem_id")
+    private List<StockMovementEntity> movements = new ArrayList<>();
+
+    public OrderItemEntity(OrderEntity orderEntity, ItemEntity itemEntity, Double quantity) {
         this.orderEntity = orderEntity;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        OrderItemEntity other = (OrderItemEntity) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
+        this.itemEntity = itemEntity;
+        this.quantity = quantity;
     }
 }

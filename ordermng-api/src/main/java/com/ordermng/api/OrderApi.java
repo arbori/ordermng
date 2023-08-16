@@ -5,9 +5,8 @@
  */
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.model.Order;
+import com.ordermng.api.model.OrderRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
@@ -37,7 +37,7 @@ public interface OrderApi {
     @RequestMapping(value = "/order",
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
+    public ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody OrderRequest orderRequest);
 
 
     @Operation(summary = "Delete an order", description = "delete an order", tags={ "order" })
@@ -51,7 +51,7 @@ public interface OrderApi {
 
     @Operation(summary = "List uss", description = "List all uss available", tags={ "order" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Order.class)))),
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = OrderRequest.class)))),
         
         @ApiResponse(responseCode = "400", description = "Invalid status value") })
     @RequestMapping(value = "/order",
@@ -72,6 +72,6 @@ public interface OrderApi {
     @RequestMapping(value = "/order",
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body);
+    ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody OrderRequest body);
 }
 

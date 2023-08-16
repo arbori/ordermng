@@ -6,80 +6,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.ordermng.core.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name =  "ordermng_user")
-public class UserEntity extends User {
-	public UserEntity() {
-		super();
-	}
-	public UserEntity(Long id, String email, String name, Boolean active) {
-		super(email, name, active);
-
-		this.id = id;
-	}
-	public UserEntity(UserEntity user) {
-		super(user);
-
-		this.id = user.getId();
-	}
-
-	private Long id;
-
+public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+	private Long id;
 
 	@Column(name = "user_email", length = 32)
-	@Override
-	public String getEmail() {
-		return super.getEmail();
-	}
+	private String email;
 
 	@Column(name = "user_name", length = 40)
-	@Override
-	public String getName() {
-		return super.getName();
-	}
+	private String name;
 
 	@Column(name = "user_active")
-	@Override
-	public Boolean getActive() {
-		return super.getActive();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		UserEntity other = (UserEntity) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-	
-		return true;
-	}
+	private Boolean active;
 }

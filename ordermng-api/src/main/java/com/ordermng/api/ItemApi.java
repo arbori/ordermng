@@ -5,7 +5,7 @@
  */
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
+import com.ordermng.api.model.ItemRequest;
 import com.ordermng.api.model.Result;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
-import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2023-07-23T12:06:14.117462+01:00[Europe/Lisbon]")
 @Validated
@@ -37,7 +36,7 @@ public interface ItemApi {
     @RequestMapping(value = "/item",
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> addItem(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new item in the store", required=true, schema=@Schema()) @Valid @RequestBody ItemRequest body);
 
 
     @Operation(summary = "Delete an item", description = "delete an item", tags={ "item" })
@@ -52,7 +51,7 @@ public interface ItemApi {
 
     @Operation(summary = "List items", description = "List all items available", tags={ "item" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Item.class)))),
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ItemApi.class)))),
         
         @ApiResponse(responseCode = "400", description = "Invalid status value") })
     @RequestMapping(value = "/item",
@@ -73,6 +72,6 @@ public interface ItemApi {
     @RequestMapping(value = "/item",
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody Item body);
+    ResponseEntity<Result> updateItem(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent item in the store", required=true, schema=@Schema()) @Valid @RequestBody ItemRequest body);
 }
 

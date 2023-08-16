@@ -5,9 +5,8 @@
  */
 package com.ordermng.api;
 
-import com.ordermng.api.model.Item;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.model.User;
+import com.ordermng.api.model.UserRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,7 +36,7 @@ public interface UserApi {
     @RequestMapping(value = "/user",
         consumes = { "application/json" }, 
         method = RequestMethod.POST)
-    ResponseEntity<Result> addUser(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
+    ResponseEntity<Result> addUser(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new user in the store", required=true, schema=@Schema()) @Valid @RequestBody UserRequest body);
 
 
     @Operation(summary = "Delete an user", description = "delete an user", tags={ "user" })
@@ -51,7 +50,7 @@ public interface UserApi {
 
     @Operation(summary = "List uss", description = "List all uss available", tags={ "user" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = User.class)))),
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserRequest.class)))),
         
         @ApiResponse(responseCode = "400", description = "Invalid status value") })
     @RequestMapping(value = "/user",
@@ -72,6 +71,6 @@ public interface UserApi {
     @RequestMapping(value = "/user",
         consumes = { "application/json" }, 
         method = RequestMethod.PUT)
-    ResponseEntity<Result> updateUser(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent user in the store", required=true, schema=@Schema()) @Valid @RequestBody User body);
+    ResponseEntity<Result> updateUser(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent user in the store", required=true, schema=@Schema()) @Valid @RequestBody UserRequest body);
 }
 

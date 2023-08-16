@@ -21,11 +21,14 @@ public interface ItemRepository extends CrudRepository<ItemEntity, String> {
 
     public default void checkItensInOrderItems(List<OrderItemEntity> orderItemsEntity) throws OrderManagerException {
         for(OrderItemEntity orderItemEntity: orderItemsEntity) {
-            Optional<ItemEntity> optionalItemEntity = findActiveByCode(orderItemEntity.getItem().getCode());
+            Optional<ItemEntity> optionalItemEntity = findActiveByCode(orderItemEntity.getItemEntity().getCode());
         
             if(!optionalItemEntity.isPresent()) {
                 throw new OrderManagerException(String.format("The order item has an inexistent item: %s", orderItemEntity));
             }
         }
     }
+
+    @Query("select i from ItemEntity i where i.name = :itemName and i.active = true")
+    public String findItemCodeByName(@Param("itemName") String itemName);
 }

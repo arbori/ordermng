@@ -10,22 +10,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-public class Order   {
+public class OrderRequest   {
   @JsonProperty("id")
   private Long id;
   @JsonProperty("creationDate")
   @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS")
   private LocalDateTime creationDate;
   @JsonProperty("user")
-  private User user;
+  private UserRequest user;
   @JsonProperty("orderItems")
-  private List<OrderItem> orderItems;
+  private List<OrderItemRequest> orderItems;
+  @JsonProperty("type")
+  private String type;
   @JsonProperty("shipped")
   private Boolean shipped;
   @JsonProperty("active")
   private Boolean active;
 
-  public Order id(Long id) {
+  public OrderRequest id(Long id) {
     this.id = id;
     return this;
   }
@@ -37,7 +39,7 @@ public class Order   {
     this.id = id;
   }
 
-  public Order creationDate(LocalDateTime creationDate) {
+  public OrderRequest creationDate(LocalDateTime creationDate) {
     this.creationDate = creationDate;
     return this;
   }
@@ -49,31 +51,43 @@ public class Order   {
     this.creationDate = creationDate;
   }
 
-  public Order user(User user) {
+  public OrderRequest user(UserRequest user) {
     this.user = user;
     return this;
   }
   @Schema(example = "", description = "")
-  public User getUser() {
+  public UserRequest getUser() {
     return user;
   }
-  public void setUser(User user) {
+  public void setUser(UserRequest user) {
     this.user = user;
   }
 
-  public Order orderItems(List<OrderItem> orderItems) {
+  public OrderRequest orderItems(List<OrderItemRequest> orderItems) {
     this.orderItems = orderItems;
     return this;
   }
   @Schema(example = "", description = "")
-  public List<OrderItem> getOrderItems() {
+  public List<OrderItemRequest> getOrderItems() {
     return orderItems;
   }
-  public void setOrderItems(List<OrderItem> orderItems) {
+  public void setOrderItems(List<OrderItemRequest> orderItems) {
     this.orderItems = orderItems;
   }
 
-  public Order shipped(Boolean shipped) {
+  public OrderRequest type(String type) {
+    this.type = type;
+    return this;
+  }
+  @Schema(example = "", description = "")
+  public String getType() {
+    return type;
+  }
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public OrderRequest shipped(Boolean shipped) {
     this.shipped = shipped;
     return this;
   }
@@ -85,7 +99,7 @@ public class Order   {
     this.shipped = shipped;
   }
 
-  public Order active(Boolean active) {
+  public OrderRequest active(Boolean active) {
     this.active = active;
     return this;
   }
@@ -123,7 +137,7 @@ public class Order   {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Order other = (Order) obj;
+    OrderRequest other = (OrderRequest) obj;
     if (id == null) {
       if (other.id != null)
         return false;

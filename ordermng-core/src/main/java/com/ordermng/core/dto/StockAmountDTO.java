@@ -1,20 +1,26 @@
-package com.ordermng.core.order;
+package com.ordermng.core.dto;
 
-import com.ordermng.core.item.Item;
-
-public class StockAmount {
-    private Item item;
+public class StockAmountDTO {
+    private ItemDTO item;
     private Double amount;
 
-    public StockAmount(Item item, Double amount) {
+    public StockAmountDTO() {
+    }
+
+    public StockAmountDTO(ItemDTO item, Double amount) {
         this.item = item;
         this.amount = amount;
     }
+
+    public StockAmountDTO(StockAmountDTO obj) {
+        this.item = obj.item;
+        this.amount = obj.amount;
+    }
     
-    public Item getItem() {
+    public ItemDTO getItem() {
         return item;
     }
-    public void setItem(Item item) {
+    public void setItem(ItemDTO item) {
         this.item = item;
     }
     public Double getAmount() {
@@ -46,7 +52,7 @@ public class StockAmount {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        StockAmount other = (StockAmount) obj;
+        StockAmountDTO other = (StockAmountDTO) obj;
         if (item == null) {
             if (other.item != null)
                 return false;
@@ -59,6 +65,4 @@ public class StockAmount {
             return false;
         return true;
     }
-
-
 }

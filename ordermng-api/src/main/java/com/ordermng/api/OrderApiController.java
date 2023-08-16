@@ -1,20 +1,23 @@
 package com.ordermng.api;
 
-import com.ordermng.api.model.Order;
+import com.ordermng.api.component.OrderComponent;
+import com.ordermng.api.component.OrderItemComponent;
+import com.ordermng.api.component.UserComponent;
+import com.ordermng.api.model.OrderItemRequest;
+import com.ordermng.api.model.OrderRequest;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.transform.OrderTransform;
-import com.ordermng.core.order.OrderUseCase;
-import com.ordermng.db.item.ItemRepository;
+import com.ordermng.api.model.UserRequest;
+import com.ordermng.core.dto.OrderDTO;
+import com.ordermng.core.dto.OrderItemDTO;
+import com.ordermng.core.dto.OrderType;
+import com.ordermng.core.dto.UserDTO;
 import com.ordermng.db.order.OrderEntity;
-import com.ordermng.db.order.OrderItemEntity;
-import com.ordermng.db.order.OrderItemRepository;
-import com.ordermng.db.order.OrderRepository;
 import com.ordermng.db.user.UserEntity;
-import com.ordermng.db.user.UserRepository;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -33,60 +36,57 @@ import java.util.Optional;
 public class OrderApiController implements OrderApi {
 
     private static final Logger log = LoggerFactory.getLogger(UserApiController.class);
-
+    
     private final HttpServletRequest request;
 
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final UserRepository userRepository;
-    private final ItemRepository itemRepository; 
+    private final OrderComponent orderComponent;
+    private final OrderItemComponent orderItemComponent; 
+    private final UserComponent userComponent;
+
+    private final ModelMapper modelMapper;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public OrderApiController(HttpServletRequest request, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserRepository userRepository, ItemRepository itemRepository) {
+    public OrderApiController(HttpServletRequest request, OrderComponent orderComponent, OrderItemComponent orderItemComponent, UserComponent userComponent) {
         this.request = request;
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
+        this.orderComponent = orderComponent;
+        this.orderItemComponent = orderItemComponent;
+        this.userComponent = userComponent;
+
+        this.modelMapper = new ModelMapper();
     }
 
-    public ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Create a new order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body) {
+    public ResponseEntity<Result> addOrder(@Parameter(in = ParameterIn.DEFAULT, description = "", required=true, schema=@Schema()) @Valid @RequestBody OrderRequest orderRequest) {
         String accept = request.getHeader("Accept");
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                OrderEntity orderEntity = OrderTransform.requestToEntity(body);
+                Optional<UserEntity> userOptional = userComponent.findActiveByEmail(orderRequest.getUser().getEmail());
+                
+                List<OrderItemDTO> orderItems = new ArrayList<>();    
+                for(OrderItemRequest itemRequest: orderRequest.getOrderItems()) {
+                    OrderItemDTO orderItemDTO = modelMapper.map(itemRequest, OrderItemDTO.class);
+                    orderItems.add(orderItemDTO);
+                } 
+                
+                if(userOptional.isPresent() && !orderItems.isEmpty()) {
+                    UserDTO user = modelMapper.map(userOptional.get(), UserDTO.class);
+                    OrderType type = "SALE".equals(orderRequest.getType()) ? OrderType.SALE : OrderType.PURCHASE;
 
-                List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
-        
-                body.getOrderItems().forEach(oapi -> {
-                    OrderItemEntity orderItemEntity = OrderTransform.requestToEntity(oapi);
-                    orderItemEntity.setOrderEntity(orderEntity);
-        
-                    orderItemsEntity.add(orderItemEntity);
-                });
-        
-                if(OrderUseCase.isValid(orderEntity)) {
-                    orderEntity.setUser(userRepository.findAndFillUser((UserEntity) orderEntity.getUser()));
-
-                    itemRepository.checkItensInOrderItems(orderEntity.getOrderItemsEntity());
-
-                    orderRepository.save(orderEntity);
-                    orderItemRepository.saveAll(orderItemsEntity);
+                    orderComponent.save(orderComponent.newOrder(user, orderItems, type, orderItemComponent));
 
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The order has been add", body), 
+                        new Result(HttpStatus.OK.value(), "The order has been add", ""), 
                         HttpStatus.OK);
                 }
 
                 return new ResponseEntity<Result>(
-                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", body), 
+                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", ""), 
                         HttpStatus.BAD_REQUEST);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
                 return new ResponseEntity<Result>(
-                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), body), 
+                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), ""), 
                     HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -101,7 +101,7 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<OrderEntity> optionalUserEntity = orderRepository.findById(id);
+                Optional<OrderEntity> optionalUserEntity = orderComponent.findActiveById(id);
 
                 if(optionalUserEntity.isPresent()) {
                     optionalUserEntity.get().setActive(false);
@@ -135,9 +135,9 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                List<Order> list = new ArrayList<>();
+                List<OrderRequest> list = new ArrayList<>();
 
-                orderRepository.findAllActive().forEach(o -> list.add(OrderTransform.entityToResponse(o)));
+                orderComponent.findAllActive().forEach(o -> list.add(modelMapper.map(o, OrderRequest.class)));
                 
                 return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
             } catch (Exception e) {
@@ -154,19 +154,16 @@ public class OrderApiController implements OrderApi {
             HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody Order body) {
+    public ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody OrderRequest body) {
         String accept = request.getHeader("Accept");
         
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<OrderEntity> optionalOrder = orderRepository.findActiveById(body.getId());
-                OrderEntity orderEntity = OrderTransform.requestToEntity(body);
+                Optional<OrderDTO> optionalOrder = orderComponent.updateEntity(modelMapper.map(body, OrderDTO.class));
 
-                if(optionalOrder.isPresent() && OrderUseCase.isValid(orderEntity)) {
-                    OrderTransform.updateEntity(optionalOrder.get(), orderEntity);
-
+                if(optionalOrder.isPresent()) {
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", OrderTransform.entityToResponse(orderRepository.save(optionalOrder.get()))), 
+                        new Result(HttpStatus.OK.value(), "", modelMapper.map(orderComponent.save(optionalOrder.get()), OrderRequest.class)), 
                         HttpStatus.OK);
                 }
 

@@ -18,7 +18,7 @@ public class StockMovement {
   private LocalDateTime creationDate;
 
   @JsonProperty("item")
-  private Item item;
+  private ItemRequest item;
 
   @JsonProperty("quantity")
   private Double quantity;
@@ -51,17 +51,17 @@ public class StockMovement {
     this.creationDate = creationDate;
   }
 
-  public StockMovement item(Item item) {
+  public StockMovement item(ItemRequest item) {
     this.item = item;
     return this;
   }
 
   @Schema(example = "", description = "")
-  public Item getItem() {
+  public ItemRequest getItem() {
     return item;
   }
 
-  public void setItem(Item item) {
+  public void setItem(ItemRequest item) {
     this.item = item;
   }
 
