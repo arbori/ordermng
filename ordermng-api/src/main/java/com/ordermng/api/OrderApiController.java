@@ -6,7 +6,6 @@ import com.ordermng.api.component.UserComponent;
 import com.ordermng.api.model.OrderItemRequest;
 import com.ordermng.api.model.OrderRequest;
 import com.ordermng.api.model.Result;
-import com.ordermng.api.model.UserRequest;
 import com.ordermng.core.dto.OrderDTO;
 import com.ordermng.core.dto.OrderItemDTO;
 import com.ordermng.core.dto.OrderType;

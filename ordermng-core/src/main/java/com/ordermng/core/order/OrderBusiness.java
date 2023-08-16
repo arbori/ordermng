@@ -2,8 +2,6 @@ package com.ordermng.core.order;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import com.ordermng.core.dto.OrderDTO;
 import com.ordermng.core.dto.OrderItemDTO;
 import com.ordermng.core.dto.OrderType;

@@ -3,9 +3,6 @@ package com.ordermng.core.item;
 import java.util.Optional;
 
 import com.ordermng.core.dto.ItemDTO;
-import com.ordermng.core.dto.OrderDTO;
-import com.ordermng.core.dto.OrderItemDTO;
-import com.ordermng.core.dto.UserDTO;
 
 public interface ItemBusiness {
     /**
