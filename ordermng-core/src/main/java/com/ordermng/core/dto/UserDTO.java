@@ -1,6 +1,7 @@
 package com.ordermng.core.dto;
 
 public class UserDTO {
+	protected Long id;
 	protected String email;
 	protected String name;
 	protected Boolean active = true;
@@ -15,11 +16,18 @@ public class UserDTO {
 	}
 
 	public UserDTO(UserDTO user) {
+		this.id = user.id;
 		this.email = user.email;
 		this.name = user.name;
 		this.active = user.active;
 	}
 
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getEmail() {
 		return email;
 	}

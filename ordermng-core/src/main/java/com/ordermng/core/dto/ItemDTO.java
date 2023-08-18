@@ -3,7 +3,7 @@ package com.ordermng.core.dto;
 public class ItemDTO {
 	private String code;
 	private String name;
-	private Boolean active;
+	private Boolean active = true;
 
 	public ItemDTO() {
 	}

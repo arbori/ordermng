@@ -49,19 +49,10 @@ public interface OrderBusiness {
         }
 
         if(order.getType() == OrderType.SALE) {
-            order.getOrderItems().stream().filter(o -> !orderItemBusiness.isSatisfied(o)).forEach(orderItem ->
-                stockAmounts.stream().filter(a -> a.getItem().equals(orderItem.getItem())).forEach(stockAmount -> {
-                    double necessity = orderItem.getQuantity() - orderItemBusiness.getMovimentAmount(orderItem);
-
-                    double quantity = stockAmount.getAmount() > necessity ? necessity : stockAmount.getAmount();
-                    
-                    orderItemBusiness.addStockMovement(orderItem, new StockMovementDTO(orderItem.getItem(), orderItem, LocalDateTime.now(), quantity, true));
-                })
-            );
+            satisfySaleOrder(order, stockAmounts, orderItemBusiness);
         } 
         else if(order.getType() == OrderType.PURCHASE) {
-            order.getOrderItems().forEach(oi ->
-                orderItemBusiness.addStockMovement(oi, new StockMovementDTO(oi.getItem(), oi, LocalDateTime.now(), oi.getQuantity(), true)));
+            satisfyPurchaseOrder(order, stockAmounts, orderItemBusiness);
         }
 
         return order;
@@ -71,5 +62,26 @@ public interface OrderBusiness {
         return order.getCreationDate() != null &&
             userBusiness.isValid(order.getUser()) &&
             order.getActive() != null;
+    }
+
+    default OrderDTO satisfySaleOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
+        order.getOrderItems().stream().filter(o -> !orderItemBusiness.isSatisfied(o)).forEach(orderItem ->
+            stockAmounts.stream().filter(a -> a.getItem().equals(orderItem.getItem())).forEach(stockAmount -> {
+                double necessity = orderItem.getQuantity() - orderItemBusiness.getMovimentAmount(orderItem);
+
+                double quantity = stockAmount.getAmount() > necessity ? necessity : stockAmount.getAmount();
+                
+                orderItemBusiness.addStockMovement(orderItem, new StockMovementDTO(orderItem.getItem(), orderItem, LocalDateTime.now(), quantity, true));
+            })
+        );
+
+        return order;
+    }
+    
+    default OrderDTO satisfyPurchaseOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
+        order.getOrderItems().forEach(oi ->
+            orderItemBusiness.addStockMovement(oi, new StockMovementDTO(oi.getItem(), oi, LocalDateTime.now(), oi.getQuantity(), true)));
+
+        return order;
     }
 }

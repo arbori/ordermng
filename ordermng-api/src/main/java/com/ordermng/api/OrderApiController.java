@@ -11,7 +11,6 @@ import com.ordermng.core.dto.OrderItemDTO;
 import com.ordermng.core.dto.OrderType;
 import com.ordermng.core.dto.UserDTO;
 import com.ordermng.db.order.OrderEntity;
-import com.ordermng.db.user.UserEntity;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,28 +58,35 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<UserEntity> userOptional = userComponent.findActiveByEmail(orderRequest.getUser().getEmail());
-                
+                if(orderRequest.getUser() == null || orderRequest.getUser().getEmail() == null || 
+                        !userComponent.checkUserExists(orderRequest.getUser().getEmail()).isPresent()) {
+                    return new ResponseEntity<Result>(
+                            new Result(HttpStatus.BAD_REQUEST.value(), "User does not exist", orderRequest.getUser()), 
+                            HttpStatus.BAD_REQUEST);
+                }
+
+                if(orderRequest.getOrderItems() == null || orderRequest.getOrderItems().isEmpty()) {
+                    return new ResponseEntity<Result>(
+                            new Result(HttpStatus.BAD_REQUEST.value(), "An order without items, is not possible", orderRequest.getOrderItems()), 
+                            HttpStatus.BAD_REQUEST);
+                }
+
                 List<OrderItemDTO> orderItems = new ArrayList<>();    
                 for(OrderItemRequest itemRequest: orderRequest.getOrderItems()) {
                     OrderItemDTO orderItemDTO = modelMapper.map(itemRequest, OrderItemDTO.class);
                     orderItems.add(orderItemDTO);
                 } 
                 
-                if(userOptional.isPresent() && !orderItems.isEmpty()) {
-                    UserDTO user = modelMapper.map(userOptional.get(), UserDTO.class);
-                    OrderType type = "SALE".equals(orderRequest.getType()) ? OrderType.SALE : OrderType.PURCHASE;
+                UserDTO user = modelMapper.map(orderRequest.getUser(), UserDTO.class);
+                OrderType type = "SALE".equals(orderRequest.getType()) ? OrderType.SALE : OrderType.PURCHASE;
 
-                    orderComponent.save(orderComponent.newOrder(user, orderItems, type, orderItemComponent));
-
-                    return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The order has been add", ""), 
-                        HttpStatus.OK);
-                }
+                orderRequest = modelMapper.map(
+                    orderComponent.save(orderComponent.newOrder(user, orderItems, type, orderItemComponent)),
+                    OrderRequest.class);
 
                 return new ResponseEntity<Result>(
-                        new Result(HttpStatus.BAD_REQUEST.value(), "Invalid request", ""), 
-                        HttpStatus.BAD_REQUEST);
+                    new Result(HttpStatus.OK.value(), "The order has been add", ""), 
+                    HttpStatus.OK);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 

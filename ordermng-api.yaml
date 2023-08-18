@@ -24,6 +24,8 @@ info:
       
       7 - Write a log file with: orders completed, stock movements, email sent and errors.
 
+      - When an inactive item is sent by an order, this need to be processed and api must return a warning about the item.
+      
       Entities
       - Item
                   

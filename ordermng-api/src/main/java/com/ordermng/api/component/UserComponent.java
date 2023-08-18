@@ -38,8 +38,11 @@ public class UserComponent implements UserBusiness {
 
         if(userEntityOptional.isPresent()) {
             UserEntity entity = userEntityOptional.get();
+            UserDTO userDto = new UserDTO(entity.getEmail(), entity.getName(), entity.getActive());
 
-            return Optional.of(new UserDTO(entity.getEmail(), entity.getName(), entity.getActive()));
+            userDto.setId(entity.getId());
+            
+            return Optional.of(userDto);
         }
 
         return Optional.empty();
@@ -74,5 +77,9 @@ public class UserComponent implements UserBusiness {
 
     public UserEntity save(UserEntity itemEntity) {
         return repository.save(itemEntity);
+    }
+
+    public Optional<Integer> checkUserExists(String email) {
+        return this.repository.checkUserExists(email);
     }
 }
