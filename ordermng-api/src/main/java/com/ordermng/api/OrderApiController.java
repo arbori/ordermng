@@ -10,7 +10,6 @@ import com.ordermng.core.dto.OrderDTO;
 import com.ordermng.core.dto.OrderItemDTO;
 import com.ordermng.core.dto.OrderType;
 import com.ordermng.core.dto.UserDTO;
-import com.ordermng.db.order.OrderEntity;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -106,15 +105,11 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                Optional<OrderEntity> optionalUserEntity = orderComponent.findActiveById(id);
+                Long deletedId = orderComponent.inactiveOrderById(id);
 
-                if(optionalUserEntity.isPresent()) {
-                    optionalUserEntity.get().setActive(false);
-
-                    //repository.save(optionalUserEntity.get());
-
+                if(deletedId != null) {
                     return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "The user has been deleted", id), 
+                        new Result(HttpStatus.OK.value(), "The user has been deleted", deletedId), 
                         HttpStatus.OK);
                 }
 
@@ -140,11 +135,7 @@ public class OrderApiController implements OrderApi {
 
         if (accept != null && accept.contains("application/json")) {
             try {
-                List<OrderRequest> list = new ArrayList<>();
-
-                orderComponent.findAllActive().forEach(o -> list.add(modelMapper.map(o, OrderRequest.class)));
-                
-                return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", list), HttpStatus.OK);
+                return new ResponseEntity<Result>(new Result(HttpStatus.OK.value(), "", orderComponent.retrieveOrders()), HttpStatus.OK);
             } catch (Exception e) {
                 log.error("Couldn't serialize response for content type application/json", e);
 
@@ -160,30 +151,6 @@ public class OrderApiController implements OrderApi {
     }
 
     public ResponseEntity<Result> updateOrder(@Parameter(in = ParameterIn.DEFAULT, description = "Update an existent order in the store", required=true, schema=@Schema()) @Valid @RequestBody OrderRequest body) {
-        String accept = request.getHeader("Accept");
-        
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                Optional<OrderDTO> optionalOrder = orderComponent.updateEntity(modelMapper.map(body, OrderDTO.class));
-
-                if(optionalOrder.isPresent()) {
-                    return new ResponseEntity<Result>(
-                        new Result(HttpStatus.OK.value(), "", modelMapper.map(orderComponent.save(optionalOrder.get()), OrderRequest.class)), 
-                        HttpStatus.OK);
-                }
-
-                return new ResponseEntity<Result>(
-                    new Result(HttpStatus.BAD_REQUEST.value(), "User does not exist or invalid", body), 
-                    HttpStatus.BAD_REQUEST);
-            } catch (Exception e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-
-                return new ResponseEntity<Result>(
-                    new Result(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null), 
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
         return new ResponseEntity<Result>(
             new Result(HttpStatus.NOT_IMPLEMENTED.value(), "NOT IMPLEMENTED", null), 
             HttpStatus.NOT_IMPLEMENTED);

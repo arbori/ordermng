@@ -35,6 +35,7 @@ create table ordermng_order_item (
 	orderitem_order_id int not null references ordermng_order (order_id),
 	orderitem_item_code VARCHAR(12) NOT null references ordermng_item (item_code),
 	orderitem_quantity double precision not null,
+	orderitem_active boolean not null,
 	constraint ordermng_order_item_pkey primary key (orderitem_id)
 );
 

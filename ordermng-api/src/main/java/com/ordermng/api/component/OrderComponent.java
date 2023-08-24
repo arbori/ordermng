@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ordermng.api.model.OrderRequest;
 import com.ordermng.core.OrderManagerException;
 import com.ordermng.core.dto.OrderDTO;
 import com.ordermng.core.dto.OrderItemDTO;
@@ -16,7 +17,6 @@ import com.ordermng.core.dto.UserDTO;
 import com.ordermng.core.order.OrderBusiness;
 import com.ordermng.core.user.UserBusiness;
 import com.ordermng.db.item.ItemEntity;
-import com.ordermng.db.item.ItemRepository;
 import com.ordermng.db.movement.StockMovementEntity;
 import com.ordermng.db.movement.StockMovementRepository;
 import com.ordermng.db.order.OrderEntity;
@@ -25,17 +25,17 @@ import com.ordermng.db.order.OrderRepository;
 import com.ordermng.db.user.UserEntity;
 
 @Component
-public class OrderComponent implements OrderBusiness {
+public class OrderComponent extends OrderBusiness {
     private final OrderRepository orderRepository;
-    private final ItemRepository itemRepository;
+    private final OrderItemComponent orderItemComponent;
     private final StockMovementRepository stockMovementRepository; 
     private final UserBusiness userBusiness;
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    public OrderComponent(OrderRepository orderRepository, ItemRepository itemRepository, StockMovementRepository stockMovementRepository, UserBusiness userBusiness) {
+    public OrderComponent(OrderRepository orderRepository, OrderItemComponent orderItemComponent, StockMovementRepository stockMovementRepository, UserBusiness userBusiness) {
         this.orderRepository = orderRepository;
-        this.itemRepository = itemRepository;
+        this.orderItemComponent = orderItemComponent;
         this.stockMovementRepository = stockMovementRepository;
         this.userBusiness = userBusiness;
     }
@@ -44,21 +44,64 @@ public class OrderComponent implements OrderBusiness {
      * Get the list of active items.
      * @return A list of active items.
      */
-    public Iterable<OrderEntity> findAllActive() {
-        return orderRepository.findAllActive();
+    public List<OrderRequest> retrieveOrders() {
+        List<OrderRequest> list = new ArrayList<>();
+
+        orderRepository.findAllActive().forEach(o -> list.add(modelMapper.map(o, OrderRequest.class)));
+
+        return list;
     }
 
-    public Optional<OrderEntity> findActiveById(Long id) {
-        return orderRepository.findActiveById(id);
+    /**
+     * 
+     * @param id
+     * @return
+     */
+    public Long inactiveOrderById(Long id) {
+        Optional<OrderEntity> optionalUserEntity = orderRepository.findActiveById(id);
+
+        if(optionalUserEntity.isPresent()) {
+            optionalUserEntity.get().setActive(false);
+
+            optionalUserEntity.get().getOrderItemsEntity().forEach(e -> {
+                e.setActive(false);
+                e.getMovements().forEach(m -> m.setActive(false));
+            });
+
+            orderRepository.save(optionalUserEntity.get());
+
+            return id;
+        }
+        else {
+            return null;
+        }
     }
 
+    /**
+     * 
+     * @param order
+     * @return
+     * @throws OrderManagerException
+     */
     public OrderEntity save(OrderDTO order) throws OrderManagerException {
         OrderEntity orderEntity = modelMapper.map(order, OrderEntity.class);
 
         orderEntity.setUserEntity(findUserEntityByUserDTO(order.getUser()));
-        orderEntity.setOrderItemsEntity(findOrderItemsEntityByOrderItems(orderEntity, order.getOrderItems()));
 
-        return orderRepository.save(orderEntity);
+        List<OrderItemEntity> orderItems = findOrderItemsEntityByOrderItems(orderEntity, order.getOrderItems());
+
+        orderItems.forEach(oi -> oi.setActive(true));
+
+        orderEntity.setOrderItemsEntity(orderItems);
+        
+        try {
+            orderEntity = orderRepository.save(orderEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OrderManagerException(e);
+        }
+
+        return orderEntity;
     }
 
     private UserEntity findUserEntityByUserDTO(UserDTO user) throws OrderManagerException {
@@ -83,7 +126,7 @@ public class OrderComponent implements OrderBusiness {
         List<OrderItemEntity> orderItemsEntity = new ArrayList<>();
 
         for(OrderItemDTO orderItemDTO: orderItems) { 
-            ItemEntity itemEntity = findItemByOrderItemDTO(orderItemDTO);
+            ItemEntity itemEntity = orderItemComponent.findItemByOrderItemDTO(orderItemDTO);
 
             if(itemEntity == null) {
                 continue;
@@ -99,16 +142,6 @@ public class OrderComponent implements OrderBusiness {
         }
         
         return orderItemsEntity;
-    }
-
-    private ItemEntity findItemByOrderItemDTO(OrderItemDTO orderItemDTO) throws OrderManagerException {
-        if(orderItemDTO.getItem() == null) {
-            throw new OrderManagerException(String.format("Order item has a null Item: %s", orderItemDTO));
-        }
-
-        Optional<ItemEntity> itemEntityOptional = itemRepository.findActiveByCode(orderItemDTO.getItem().getCode());
-
-        return !itemEntityOptional.isPresent() ? null : itemEntityOptional.get();
     }
 
     private List<StockMovementEntity> findStockMovementsEntityByOrderItemDTO(OrderItemDTO orderItemDto, ItemEntity itemEntity, OrderItemEntity orderItemEntity) throws OrderManagerException {
@@ -154,7 +187,7 @@ public class OrderComponent implements OrderBusiness {
      */
     public Optional<OrderDTO> updateEntity(OrderDTO src) throws OrderManagerException {
         OrderDTO tar = null;
-        Optional<OrderEntity> optionalOrder = this.findActiveById(src.getId());
+        Optional<OrderEntity> optionalOrder = orderRepository.findActiveById(src.getId());
 
         if(optionalOrder.isPresent()) {
             tar = modelMapper.map(optionalOrder.get(), OrderDTO.class);

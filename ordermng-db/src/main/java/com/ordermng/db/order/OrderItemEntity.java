@@ -46,6 +46,9 @@ public class OrderItemEntity {
     @Column(name = "orderitem_quantity")
     private Double quantity;
 
+	@Column(name = "orderitem_active")
+	private Boolean active;
+	
     @OneToMany
     @JoinColumn(name = "movement_orderitem_id")
     private List<StockMovementEntity> movements = new ArrayList<>();

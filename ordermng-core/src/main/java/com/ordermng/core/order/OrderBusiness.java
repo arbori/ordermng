@@ -11,11 +11,11 @@ import com.ordermng.core.dto.UserDTO;
 import com.ordermng.core.orderitem.OrderItemBusiness;
 import com.ordermng.core.user.UserBusiness;
 
-public interface OrderBusiness {
+public abstract class OrderBusiness {
     /**
      * 
      */
-    public default OrderDTO newOrder(UserDTO user, List<OrderItemDTO> orderItems, OrderType type, OrderItemBusiness orderItemBusiness) {
+    public OrderDTO newOrder(UserDTO user, List<OrderItemDTO> orderItems, OrderType type, OrderItemBusiness orderItemBusiness) {
         return this.satisfyOrder(
             new OrderDTO(null, LocalDateTime.now(), user, type, orderItems), 
             orderItemBusiness.retriveStockAmountFromOrderItems(orderItems),
@@ -28,7 +28,7 @@ public interface OrderBusiness {
      * @param tar Target object
      * @param src Source object
      */
-    public default void updateEntity(OrderDTO tar, OrderDTO src) {
+    public void updateEntity(OrderDTO tar, OrderDTO src) {
         if(!tar.getId().equals(src.getId())) {
             return;
         }
@@ -42,7 +42,26 @@ public interface OrderBusiness {
         src.getOrderItems().forEach(oi -> tar.getOrderItems().add(new OrderItemDTO(oi)));
     }
 
-    public default OrderDTO satisfyOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
+    /**
+     * 
+     * @param order
+     * @param userBusiness
+     * @return
+     */
+    public boolean isValid(OrderDTO order, UserBusiness userBusiness) {
+        return order.getCreationDate() != null &&
+            userBusiness.isValid(order.getUser()) &&
+            order.getActive() != null;
+    }
+
+    /**
+     * 
+     * @param order
+     * @param stockAmounts
+     * @param orderItemBusiness
+     * @return
+     */
+    protected OrderDTO satisfyOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
         if(order == null || order.getOrderItems() == null || order.getOrderItems().isEmpty() ||
                 stockAmounts == null) {
             return order;
@@ -52,19 +71,20 @@ public interface OrderBusiness {
             satisfySaleOrder(order, stockAmounts, orderItemBusiness);
         } 
         else if(order.getType() == OrderType.PURCHASE) {
-            satisfyPurchaseOrder(order, stockAmounts, orderItemBusiness);
+            satisfyPurchaseOrder(order, orderItemBusiness);
         }
 
         return order;
     }
 
-    public default boolean isValid(OrderDTO order, UserBusiness userBusiness) {
-        return order.getCreationDate() != null &&
-            userBusiness.isValid(order.getUser()) &&
-            order.getActive() != null;
-    }
-
-    default OrderDTO satisfySaleOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
+    /**
+     * 
+     * @param order
+     * @param stockAmounts
+     * @param orderItemBusiness
+     * @return
+     */
+    protected OrderDTO satisfySaleOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
         order.getOrderItems().stream().filter(o -> !orderItemBusiness.isSatisfied(o)).forEach(orderItem ->
             stockAmounts.stream().filter(a -> a.getItem().equals(orderItem.getItem())).forEach(stockAmount -> {
                 double necessity = orderItem.getQuantity() - orderItemBusiness.getMovimentAmount(orderItem);
@@ -78,7 +98,14 @@ public interface OrderBusiness {
         return order;
     }
     
-    default OrderDTO satisfyPurchaseOrder(OrderDTO order, List<StockAmountDTO> stockAmounts, OrderItemBusiness orderItemBusiness) {
+    /**
+     * 
+     * @param order
+     * @param stockAmounts
+     * @param orderItemBusiness
+     * @return
+     */
+    protected OrderDTO satisfyPurchaseOrder(OrderDTO order, OrderItemBusiness orderItemBusiness) {
         order.getOrderItems().forEach(oi ->
             orderItemBusiness.addStockMovement(oi, new StockMovementDTO(oi.getItem(), oi, LocalDateTime.now(), oi.getQuantity(), true)));
 
