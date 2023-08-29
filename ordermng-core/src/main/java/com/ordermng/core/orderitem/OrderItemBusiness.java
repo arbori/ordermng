@@ -1,5 +1,7 @@
 package com.ordermng.core.orderitem;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import com.ordermng.core.dto.ItemDTO;
@@ -22,12 +24,40 @@ public interface OrderItemBusiness {
     public List<OrderItemDTO> retrieveUnsatisfiedOrderItemsByItem(ItemDTO item);
 
     /**
+     * 
+     * @param stockMovement
+     */
+    public default void satisfyOrderItems(StockMovementDTO stockMovement) {
+        List<OrderItemDTO> unsatisfiedOrderItens = retrieveUnsatisfiedOrderItemsByItem(stockMovement.getItem());
+
+        Collections.sort(unsatisfiedOrderItens, (OrderItemDTO var1, OrderItemDTO var2) -> 
+            (int) (var1.getQuantity() - var2.getQuantity()));
+    
+        double availableQuantity = stockMovement.getQuantity();
+
+        for(OrderItemDTO orderItem: unsatisfiedOrderItens) {
+            availableQuantity -= addStockMovement(
+                orderItem, 
+                new StockMovementDTO(
+                    stockMovement.getItem(), 
+                    orderItem, 
+                    LocalDateTime.now(), 
+                    availableQuantity, 
+                    true));
+            
+            if(availableQuantity <= 0.0) {
+                break;
+            }
+        }
+    }
+
+    /**
      * An order item may not be fulfilled at the same time the order is entered. The addStockMovement method provides means to associate stock movements that aim to meet the request for an item, contained in an order. 
      * The stock movement received must to be at the maximum the difference between the quantity asked for the item and the sum of the set of stock movement already associated to the OrderItem object. Therefore, any stock movement with the quantity higher then that difference will have its quantity changed to be enogth to fulfiled the order item, or will not be inserted if ordem item is alread satisfied.
      * 
      * @param stockMovement The stock movement that aim to meet the need of an item.
      */
-    public default void addStockMovement(OrderItemDTO orderItem, StockMovementDTO stockMovement) {
+    public default double addStockMovement(OrderItemDTO orderItem, StockMovementDTO stockMovement) {
         double missing = orderItem.getQuantity() - getMovimentAmount(orderItem);
         
         if(missing > 0.0) {
@@ -37,6 +67,8 @@ public interface OrderItemBusiness {
 
             orderItem.getMovements().add(stockMovement);
         }
+
+        return stockMovement.getQuantity();
     }
     
     /**

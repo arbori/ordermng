@@ -106,8 +106,12 @@ public abstract class OrderBusiness {
      * @return
      */
     protected OrderDTO satisfyPurchaseOrder(OrderDTO order, OrderItemBusiness orderItemBusiness) {
-        order.getOrderItems().forEach(oi ->
-            orderItemBusiness.addStockMovement(oi, new StockMovementDTO(oi.getItem(), oi, LocalDateTime.now(), oi.getQuantity(), true)));
+        for(OrderItemDTO oi: order.getOrderItems()) {
+            StockMovementDTO sm = new StockMovementDTO(oi.getItem(), oi, LocalDateTime.now(), oi.getQuantity(), true);
+
+            orderItemBusiness.addStockMovement(oi, sm);
+            orderItemBusiness.satisfyOrderItems(sm);
+        }
 
         return order;
     }
